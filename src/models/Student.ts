@@ -1,19 +1,18 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 
-class User extends Model {
+class Student extends Model {
     static associate(models : any) {
-        User.hasMany(models.CalendarTeacher)
-        User.belongsTo(models.AllCode , {
-            foreignKey:"role"
+        Student.hasMany(models.Parent);
+        Student.hasMany(models.ExamStudent);
+        Student.hasMany(models.CalendarTeacher);
+        Student.belongsTo(models.AllCode, {
+            foreignKey: "address"
         })
-        // User.belongsTo(models.AllCode , {
-        //     foreignKey:"address"
-        // })    
     }
 }
 
-User.init(
+Student.init(
     {
         id: {
             type: DataTypes.INTEGER,
@@ -21,23 +20,21 @@ User.init(
             allowNull: false,
             autoIncrement: true,
         },
-        role: {
-            type: DataTypes.INTEGER,
-        },
-        address: {
-            type: DataTypes.INTEGER,
-        },
-        address_detail:{
-            type:DataTypes.STRING
+       
+        fullName: {
+            type: DataTypes.STRING,
         },
         phoneNumber:{
             type:DataTypes.STRING
         },
-        code :{
-            type:DataTypes.STRING
-        },
         email:{
             type:DataTypes.STRING
+        },
+        birthday:{
+            type:DataTypes.STRING
+        },
+        gender:{
+            type:DataTypes.BOOLEAN
         },
         password:{
             type:DataTypes.STRING
@@ -45,20 +42,20 @@ User.init(
         avatar:{
             type:DataTypes.STRING
         },
-        is_login_social:{
-            type:DataTypes.BOOLEAN
+        level :{
+            type:DataTypes.INTEGER
         },
-        age:{
+        address:{
+            type:DataTypes.INTEGER
+        },
+        address_detail:{
             type:DataTypes.STRING
-        },
-        gender:{
-            type:DataTypes.BOOLEAN
         },
     },
     {
         sequelize,
-        modelName: 'User',
+        modelName: 'Student',
     },
 );
 
-export default User;
+export default Student;
