@@ -32,4 +32,10 @@ export class createCourseDto {
     @IsNumber()
     @IsNotEmpty()
     discount : string
+
+    @IsString()
+    createdAt:string
+
+    @IsString()
+    updatedAt : string
 }

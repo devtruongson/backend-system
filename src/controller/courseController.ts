@@ -20,8 +20,14 @@ class CourseController {
     async handleCreateCoure (req:Request , res:Response){
         try{
             await validateData(createCourseDto , req.body , res);
+
+            if(!req.file){
+                return res.status(httpStatus.NOT_FOUND).json(ResponseHandler(httpStatus.NOT_FOUND , null , "can't upload thumbnail"))
+            }
+            
             let dataBuider = {
                 ...req.body['0'],
+                thumbnail:req.file?.fieldname,
                 code : uuidv4().slice(0,6).toUpperCase()
             }
 
@@ -38,11 +44,21 @@ class CourseController {
 
     async handleDeleteCourse( req : Request ,res : Response){
         try{
-            let id : number = req.body.id as number;
+            let code : string = req.query.code as string;
 
-            let data = await courserService.deleteCourseService(id);
+            let data = await courserService.deleteCourseService(code);
 
             return res.status(httpStatus.OK).json(data); 
+
+        }catch(err){
+            console.log(err);
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR,null , "error from server"));
+        }
+    }
+
+
+    async handleUpdateCourse(req:Request , res: Response ){
+        try{
 
         }catch(err){
             console.log(err);

@@ -1,19 +1,23 @@
 import httpStatus from "http-status";
-import { title } from "process";
 import { createCourseDto } from "~/dto/createCourse.dto";
+import { handleRemoveThumbnailCourse } from "~/helpers/handleRemoveImg";
 import Course from "~/models/Course";
 import { ResponseHandler } from "~/utils/Response";
 
 
 class CourserService {
 
-    async handleCheckCodeExit (code : string) : Promise<boolean> {
+    async handleCheckCodeExit (code : string , type: 'check' | 'query' = 'check') : Promise< boolean | createCourseDto | null  > {
+        let isCheck = false;
+
         let course = await Course.findOne({
             where:{code : code}
-        })
-        if(course) return true;
+        }) as createCourseDto  | null;
+        if(course) {
+            isCheck = true;
+        }
 
-        return false;
+        return type === 'check' ? isCheck : course;
     }
 
 
@@ -44,10 +48,21 @@ class CourserService {
         }
     }
 
-    async deleteCourseService(id : number){
+    async deleteCourseService(code : string){
         try{
+            
+            let course = await this.handleCheckCodeExit(code , "query") as createCourseDto;
+
+            if(!course) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, "course is don't exists");
+            }
+
+            if(!handleRemoveThumbnailCourse(course.thumbnail)){
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't remove thumbnail");
+            }
+
             await Course.destroy({
-                where:{id: id}
+                where:{code: code}
             })
 
             return ResponseHandler(httpStatus.OK , null , 'Delete Course Successfully') 
