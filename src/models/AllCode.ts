@@ -2,7 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 
 class AllCode extends Model {
-    static associate(models : any) {
+    static associate(models: any) {
         AllCode.hasMany(models.Parent);
         AllCode.hasMany(models.Student);
         AllCode.hasMany(models.User);
@@ -26,8 +26,8 @@ AllCode.init(
         title: {
             type: DataTypes.STRING,
         },
-        code:{
-            type:DataTypes.STRING
+        code: {
+            type: DataTypes.STRING,
         },
     },
     {

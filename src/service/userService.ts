@@ -1,29 +1,27 @@
-import User from "~/models/User";
+import User from '~/models/User';
 
 class UserService {
-     async createUserService (){
-        try{
+    async createUserService() {
+        try {
             await User.create({
-                role:1,
-                address : 1,
-                address_detail:1,
-                phoneNumber:'123',
-                code:'123',
-                email:'email',
-                password:'123',
-                avatar:'123',
-                is_login_social:false,
-                age:20,
-                gender:true,
-            })
-        
+                role: 1,
+                address: 1,
+                address_detail: 1,
+                phoneNumber: '123',
+                code: '123',
+                email: 'email',
+                password: '123',
+                avatar: '123',
+                is_login_social: false,
+                age: 20,
+                gender: true,
+            });
+
             return 'success';
-        }catch(err){
+        } catch (err) {
             console.log(err);
-        }    
+        }
     }
 }
 
-const userService = new UserService();
-
-export default userService;
+export default new UserService();
