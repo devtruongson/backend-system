@@ -2,14 +2,15 @@ import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 
 class User extends Model {
-    static associate(models: any) {
-        User.hasMany(models.CalendarTeacher);
-        User.belongsTo(models.AllCode, {
-            foreignKey: 'role',
-        });
-        // User.belongsTo(models.AllCode , {
-        //     foreignKey:"address"
-        // })
+    static associate(models : any) {
+        User.hasMany(models.CalendarTeacher)
+        User.hasMany(models.Question)
+        User.belongsTo(models.AllCode , {
+            foreignKey:"role"
+        })
+        User.belongsTo(models.AllCode , {
+            foreignKey:"address"
+        })    
     }
 }
 

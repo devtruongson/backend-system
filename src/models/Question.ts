@@ -8,6 +8,9 @@ class Question extends Model {
             foreignKey:"level"
         });
         Question.hasMany(models.ExamQuestion);
+        Question.belongsTo(models.User , {
+            foreignKey:"author_id"
+        })
     }
 }
 
@@ -31,7 +34,7 @@ Question.init(
         level:{
             type:DataTypes.INTEGER
         },
-        author :{
+        author_id :{
             type:DataTypes.INTEGER
         },
     },

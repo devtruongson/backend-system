@@ -3,12 +3,12 @@ import { sequelize } from '../configs/connectDB';
 
 class AllCode extends Model {
     static associate(models: any) {
+        AllCode.hasMany(models.Course);
+        AllCode.hasMany(models.User);
+        AllCode.hasMany(models.Question);
         AllCode.hasMany(models.Parent);
         AllCode.hasMany(models.Student);
-        AllCode.hasMany(models.User);
-        AllCode.hasMany(models.Course);
         AllCode.hasMany(models.Exam);
-        AllCode.hasMany(models.Question);
     }
 }
 
