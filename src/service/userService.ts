@@ -1,7 +1,9 @@
 import httpStatus from 'http-status';
+import { sequelize } from '~/configs/connectDB';
 import { loginDto } from '~/dto/login.dto';
 import { comparePassword, endCodePassword } from '~/helpers/bcrypt';
 import { handleCreateToken } from '~/middleware/jwtActions';
+import AllCode from '~/models/AllCode';
 import User from '~/models/User';
 import { IUser } from '~/utils/interface';
 import { ResponseHandler } from '~/utils/Response';
@@ -47,6 +49,7 @@ class UserService {
                     phoneNumber: dataCheck.User.phoneNumber,
                     is_login_social: dataCheck.User.is_login_social,
                     role: dataCheck.User.role,
+                    role_detail: '',
                 },
                 '30day',
             );
@@ -57,6 +60,7 @@ class UserService {
                     phoneNumber: dataCheck.User.phoneNumber,
                     is_login_social: dataCheck.User.is_login_social,
                     role: dataCheck.User.role,
+                    role_detail: '',
                 },
                 '360day',
             );
@@ -97,7 +101,23 @@ class UserService {
             where: {
                 email,
             },
+            include: [
+                {
+                    model: AllCode,
+                    as: 'roleData',
+                    attributes: ['type', 'title', 'code'],
+                },
+            ],
         })) as IUser | null;
+
+        /* 
+        (await User.findOne({
+            where: {
+                email,
+            },
+            include: [{ model: AllCode, as: 'roleData' }],
+        })) as IUser | null;
+        */
 
         if (user) {
             isValid = true;

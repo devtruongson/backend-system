@@ -1,4 +1,4 @@
-import { Sequelize, DataType } from 'sequelize';
+import { Sequelize } from 'sequelize';
 
 export const sequelize = new Sequelize('system_manage', 'sa', '123456', {
     dialect: 'mssql',

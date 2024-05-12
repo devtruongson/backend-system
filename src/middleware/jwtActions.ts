@@ -51,7 +51,7 @@ export const handleCheckTokenUser = (req: Request, res: Response, next: NextFunc
 
         req.body.token_author = decode.email;
 
-        if (decode.role === role.USER) {
+        if (decode.role_detail === role.USER) {
             next();
         }
 
@@ -84,7 +84,7 @@ export const handleCheckTokenTeacher = (req: Request, res: Response, next: NextF
 
         req.body.token_author = decode.email;
 
-        if (decode.role === role.TEACHER) {
+        if (decode.role_detail === role.TEACHER) {
             next();
         }
 
@@ -124,7 +124,7 @@ export const handleCheckTokenSale = (req: Request, res: Response, next: NextFunc
         req.body.token_author = decode?.email;
 
 
-        if (decode.role === role.SALE) {
+        if (decode.role_detail === role.SALE) {
             next();
         }
 
@@ -157,7 +157,7 @@ export const handleCheckTokenAdmin = (req: Request, res: Response, next: NextFun
 
         req.body.token_author = decode.email;
 
-        if (decode.role === role.ADMIN) {
+        if (decode.role_detail === role.ADMIN) {
             next();
         }
 
