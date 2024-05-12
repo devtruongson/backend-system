@@ -4,7 +4,6 @@ import { sequelize } from '../configs/connectDB';
 class Student extends Model {
     static associate(models : any) {
         Student.hasMany(models.Parent);
-        Student.hasMany(models.ExamStudent);
         Student.hasMany(models.CalendarTeacher);
         Student.belongsTo(models.AllCode, {
             foreignKey: "address"

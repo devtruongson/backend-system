@@ -3,7 +3,7 @@ import userService from "~/service/userService";
 
 class UserController {
     async handleGet(req: Request , res : Response){
-        return res.status(200).json("a")
+        return res.status(200).json("run")
     }
 
     async handleCreateUser (req:Request , res: Response){
@@ -13,6 +13,15 @@ class UserController {
         }catch(err){
             console.log(err);
             return res.status(500).json("err server")
+        }
+    }
+
+    async handleLogin (req:Request , res : Response){
+        try{
+            res.status(200).json('run')
+        }catch(err){
+            console.log(err);
+            return res.status(500).json("err server");
         }
     }
 }

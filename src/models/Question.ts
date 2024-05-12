@@ -3,9 +3,11 @@ import { sequelize } from '../configs/connectDB';
 
 class Question extends Model {
     static associate(models : any) {
+        Question.hasMany(models.Answer);
         Question.belongsTo(models.AllCode, {
             foreignKey:"level"
-        })
+        });
+        Question.hasMany(models.ExamQuestion);
     }
 }
 

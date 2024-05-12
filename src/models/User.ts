@@ -7,9 +7,9 @@ class User extends Model {
         User.belongsTo(models.AllCode , {
             foreignKey:"role"
         })
-        // User.belongsTo(models.AllCode , {
-        //     foreignKey:"address"
-        // })    
+        User.belongsTo(models.AllCode , {
+            foreignKey:"address"
+        })    
     }
 }
 

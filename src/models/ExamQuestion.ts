@@ -3,6 +3,12 @@ import { sequelize } from '../configs/connectDB';
 
 class ExamQuestion extends Model {
     static associate(models : any) {
+        ExamQuestion.belongsTo(models.Exam , {
+            foreignKey:"exam_id"
+        })
+        ExamQuestion.belongsTo(models.Question , {
+            foreignKey:'question_id'
+        })
     }
 }
 

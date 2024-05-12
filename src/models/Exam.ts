@@ -3,6 +3,7 @@ import { sequelize } from '../configs/connectDB';
 
 class Exam extends Model {
     static associate(models : any) {
+        Exam.hasMany(models.ExamQuestion);
     }
 }
 
@@ -16,6 +17,9 @@ Exam.init(
         },
         code: {
             type: DataTypes.STRING,
+        },
+        student_id:{
+            type : DataTypes.STRING
         },
         title: {
             type: DataTypes.STRING,
