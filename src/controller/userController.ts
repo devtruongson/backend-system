@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { CreateUserDto } from '~/dto/createUser.dto';
 import userService from '~/service/userService';
+import { ResponseHandler } from '~/utils/Response';
 import { validateData } from '~/utils/validate';
 
 class UserController {
@@ -16,7 +17,7 @@ class UserController {
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
-            return res.status(500).json('Err server');
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
         }
     }
 

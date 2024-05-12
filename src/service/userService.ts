@@ -1,27 +1,34 @@
+import httpStatus from 'http-status';
 import User from '~/models/User';
 import { IUser } from '~/utils/interface';
+import { ResponseHandler } from '~/utils/Response';
 
 class UserService {
     async createUserService(body: IUser) {
         try {
-            await User.create({
-                role: 1,
-                address: 1,
-                address_detail: 1,
-                phoneNumber: '123',
-                code: '123',
-                email: 'email',
-                password: '123',
-                avatar: '123',
-                is_login_social: false,
-                age: 20,
-                gender: true,
-            });
+            const isUserExits = await this.checkUserExit(body.email);
 
-            return 'success';
+            if (isUserExits) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'User already exists');
+            }
         } catch (err) {
             console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
+    }
+
+    async checkUserExit(email: string): Promise<boolean> {
+        let isValid = true;
+        const user = await User.findOne({
+            where: {
+                email,
+            },
+        });
+
+        if (user) {
+            isValid = false;
+        }
+        return isValid;
     }
 }
 
