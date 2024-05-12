@@ -97,6 +97,16 @@ export const handleCheckTokenTeacher = (req: Request, res: Response, next: NextF
     }
 };
 
+// const handleCheckToken = (token :string | undefined,res:Response)=>{
+//     if (!token) return res.status(httpStatus.UNAUTHORIZED).json(ResponseHandler(httpStatus.UNAUTHORIZED,null,"token not found"));
+
+//     const tokenSplit =  token?.replace("Bearer","").trim();
+
+//     let decode = handleVerifyToken(token);
+
+//     if(!decode) return res.status(httpStatus.FORBIDDEN).json(ResponseHandler(httpStatus.FORBIDDEN, null , "token can't decoded"));
+// }
+
 // SALE
 
 export const handleCheckTokenSale = (req: Request, res: Response, next: NextFunction) => {
@@ -109,13 +119,10 @@ export const handleCheckTokenSale = (req: Request, res: Response, next: NextFunc
         const token = req.headers.authorization?.replace('Bearer', '').trim();
 
         let decode = handleVerifyToken(token);
+    
+        if(!decode) return res.status(httpStatus.FORBIDDEN).json(ResponseHandler(httpStatus.FORBIDDEN, null , "token can't decoded"));
+        req.body.token_author = decode?.email;
 
-        if (!decode)
-            return res
-                .status(httpStatus.FORBIDDEN)
-                .json(ResponseHandler(httpStatus.FORBIDDEN, null, "token can't decoded"));
-
-        req.body.token_author = decode.email;
 
         if (decode.role_detail === role.SALE) {
             next();

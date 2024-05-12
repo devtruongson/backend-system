@@ -1,14 +1,19 @@
 import express , { Express }from "express";
 import courseController from "~/controller/courseController";
+import { handleCheckTokenAdmin } from "~/middleware/jwtActions";
 
 
 const router = express.Router();
 
 const initApiCourse = (app :Express ) => {
 
-    router.get('/get-course',courseController.handleGetCourse)
+    router.post("/create", courseController.handleCreateCoure)
 
-    return app.use("/v1", router);
+    router.delete("/delete" , handleCheckTokenAdmin , courseController.handleDeleteCourse)
+
+    router.get('/get',courseController.handleGetCourse)
+
+    return app.use("/v1/course", router);
 }
 
 export default initApiCourse;
