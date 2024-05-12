@@ -1,7 +1,7 @@
 export interface IPayloadJWT {
     id: number;
     email: string;
-    role: number;
+    role: string;
     phoneNumber: string;
     is_login_social: boolean;
 }
