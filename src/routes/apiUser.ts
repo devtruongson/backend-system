@@ -1,17 +1,16 @@
 import express, { Express } from 'express';
 import userController from '~/controller/userController';
-import { handleCheckTokenUser } from '~/middleware/jwtActions';
+import { handleCheckTokenAdmin } from '~/middleware/jwtActions';
 
 const router = express.Router();
 
 const initApiUser = (app: Express) => {
-    router.post('/login', handleCheckTokenUser, userController.handleLogin);
-
+    router.post('/login', userController.handleLogin);
     router.get('/get-user', userController.handleGet);
+    router.post('/create', userController.handleCreateUser);
+    router.get('/all', handleCheckTokenAdmin, userController.getAllUsers);
 
-    router.post('/create-user', userController.handleCreateUser);
-
-    return app.use('/v1', router);
+    return app.use('/v1/user', router);
 };
 
 export default initApiUser;

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { CreateUserDto } from '~/dto/createUser.dto';
+import { loginDto } from '~/dto/login.dto';
 import userService from '~/service/userService';
 import { ResponseHandler } from '~/utils/Response';
 import { validateData } from '~/utils/validate';
@@ -23,10 +24,23 @@ class UserController {
 
     async handleLogin(req: Request, res: Response) {
         try {
-            res.status(200).json('run');
+            await validateData(loginDto, req.body, res);
+            const data = await userService.loginUser(req.body);
+            return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
-            return res.status(500).json('err server');
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
+    async getAllUsers(req: Request, res: Response) {
+        try {
+            await validateData(loginDto, req.body, res);
+            const data = await userService.loginUser(req.body);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
         }
     }
 }
