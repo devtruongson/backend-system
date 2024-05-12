@@ -1,4 +1,4 @@
-import httpStatus, { HttpStatus } from 'http-status';
+import { HttpStatus } from 'http-status';
 
 export const ResponseHandler = <T>(
     HttpStatus: HttpStatus,

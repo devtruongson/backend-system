@@ -1,7 +1,8 @@
 import User from '~/models/User';
+import { IUser } from '~/utils/interface';
 
 class UserService {
-    async createUserService() {
+    async createUserService(body: IUser) {
         try {
             await User.create({
                 role: 1,
