@@ -4,6 +4,7 @@ import { sequelize } from '../configs/connectDB';
 class User extends Model {
     static associate(models : any) {
         User.hasMany(models.CalendarTeacher)
+        User.hasMany(models.Question)
         User.belongsTo(models.AllCode , {
             foreignKey:"role"
         })

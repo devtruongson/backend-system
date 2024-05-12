@@ -5,6 +5,4 @@ class CourserService {
     
 }
 
-const courserService = new CourserService();
-
-export default courserService;
+export default new CourserService();
