@@ -2,16 +2,15 @@ import express, { Request, Response } from 'express';
 import compression from 'compression';
 import connectDB from './configs/connectDB';
 import initApiRoutes from './routes/api';
+import bodyParser from 'body-parser';
 
 const app = express();
 app.use(compression());
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('test'.repeat(100000));
-});
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 connectDB();
-
 
 //init API routes
 initApiRoutes(app);

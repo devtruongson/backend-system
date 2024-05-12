@@ -28,32 +28,32 @@ User.init(
         address: {
             type: DataTypes.INTEGER,
         },
-        address_detail:{
-            type:DataTypes.STRING
+        address_detail: {
+            type: DataTypes.STRING,
         },
-        phoneNumber:{
-            type:DataTypes.STRING
+        phoneNumber: {
+            type: DataTypes.STRING,
         },
-        code :{
-            type:DataTypes.STRING
+        code: {
+            type: DataTypes.STRING,
         },
-        email:{
-            type:DataTypes.STRING
+        email: {
+            type: DataTypes.STRING,
         },
-        password:{
-            type:DataTypes.STRING
+        password: {
+            type: DataTypes.STRING,
         },
-        avatar:{
-            type:DataTypes.STRING
+        avatar: {
+            type: DataTypes.STRING,
         },
-        is_login_social:{
-            type:DataTypes.BOOLEAN
+        is_login_social: {
+            type: DataTypes.BOOLEAN,
         },
-        age:{
-            type:DataTypes.STRING
+        age: {
+            type: DataTypes.STRING,
         },
-        gender:{
-            type:DataTypes.BOOLEAN
+        gender: {
+            type: DataTypes.BOOLEAN,
         },
     },
     {
