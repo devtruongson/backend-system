@@ -1,15 +1,16 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
+import Question from './Question';
 
 class ExamQuestion extends Model {
-    static associate(models : any) {
-        ExamQuestion.belongsTo(models.Exam , {
-            foreignKey:"exam_id"
-        })
-        ExamQuestion.belongsTo(models.Question , {
-            foreignKey:'question_id'
-        })
-    }
+    // static associate(models : any) {
+    //     ExamQuestion.belongsTo(models.Exam , {
+    //         foreignKey:"exam_id"
+    //     })
+    //     ExamQuestion.belongsTo(models.Question , {
+    //         foreignKey:'question_id'
+    //     })
+    // }
 }
 
 ExamQuestion.init(
@@ -26,8 +27,8 @@ ExamQuestion.init(
         question_id: {
             type: DataTypes.INTEGER,
         },
-        is_right:{
-            type:DataTypes.BOOLEAN
+        is_right: {
+            type: DataTypes.BOOLEAN,
         },
     },
     {
@@ -35,5 +36,9 @@ ExamQuestion.init(
         modelName: 'ExamQuestion',
     },
 );
+
+ExamQuestion.belongsTo(Question, {
+    foreignKey: 'question_id',
+});
 
 export default ExamQuestion;

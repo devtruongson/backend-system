@@ -5,7 +5,7 @@ import allCodeController from '~/controller/allCodeController';
 const router = express.Router();
 
 const initApiAllCode = (app: Express) => {
-    router.post('/create', handleCheckTokenAdmin, allCodeController.createAllCode);
+    router.post('/create', allCodeController.createAllCode);
 
     return app.use('/v1/all-code', router);
 };
