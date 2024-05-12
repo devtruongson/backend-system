@@ -5,7 +5,6 @@ import httpStatus from 'http-status';
 
 export const validateData = async (dto: any, data: any, res: Response) => {
     const dtoData = plainToClass(dto, data);
-    console.log(dtoData);
     const errors = await validate(dtoData);
     if (errors.length > 0) {
         return res.status(httpStatus.BAD_REQUEST).json({ errors: errors.map((error) => error.constraints) });

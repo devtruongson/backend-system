@@ -23,36 +23,47 @@ User.init(
         },
         role: {
             type: DataTypes.INTEGER,
+            allowNull: true,
         },
         address: {
             type: DataTypes.INTEGER,
+            allowNull: true,
         },
         address_detail: {
             type: DataTypes.STRING,
+            allowNull: true,
         },
         phoneNumber: {
             type: DataTypes.STRING,
+            allowNull: true,
         },
         code: {
             type: DataTypes.STRING,
+            allowNull: true,
         },
         email: {
             type: DataTypes.STRING,
+            allowNull: true,
         },
         password: {
             type: DataTypes.STRING,
+            allowNull: true,
         },
         avatar: {
             type: DataTypes.STRING,
+            allowNull: true,
         },
         is_login_social: {
             type: DataTypes.BOOLEAN,
+            allowNull: true,
         },
         age: {
             type: DataTypes.STRING,
+            allowNull: true,
         },
         gender: {
             type: DataTypes.BOOLEAN,
+            allowNull: true,
         },
     },
     {

@@ -1,10 +1,13 @@
 export interface IPayloadJWT {
-    name: string;
+    id: number;
     email: string;
-    role: string;
+    role: number;
+    phoneNumber: string;
+    is_login_social: boolean;
 }
 
 export interface IUser {
+    id: number;
     role: number;
     address: number;
     address_detail: string;
@@ -12,4 +15,8 @@ export interface IUser {
     code: string;
     email: string;
     password: string;
+    avatar: string;
+    is_login_social: boolean;
+    age: string;
+    gender: boolean;
 }
