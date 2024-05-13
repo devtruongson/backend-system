@@ -32,7 +32,8 @@ Parent.init(
 
 Parent.belongsTo(AllCode, {
     foreignKey: "association_for_student",
-    targetKey:'AssociationData'
+    targetKey:'id',
+    as:"AssociationData"
 });
 Parent.belongsTo(Student, {
     foreignKey: "child",
