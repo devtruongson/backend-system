@@ -12,6 +12,14 @@ User.init(
             allowNull: false,
             autoIncrement: true,
         },
+        firstName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+        lastName: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
         role: {
             type: DataTypes.INTEGER,
             allowNull: true,
@@ -73,11 +81,5 @@ User.belongsTo(AllCode, {
     targetKey: 'id',
     as: 'addressData',
 });
-
-User.belongsTo(AllCode , {
-    foreignKey:'address',
-    targetKey:'id',
-    as:'addressData',
-})
 
 export default User;

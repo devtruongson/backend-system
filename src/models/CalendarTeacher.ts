@@ -17,23 +17,37 @@ CalendarTeacher.init(
         teacher_id: {
             type: DataTypes.INTEGER,
         },
+
         calendar_id: {
             type: DataTypes.INTEGER,
         },
-        student_id:{
-            type:DataTypes.INTEGER
+
+        student_id: {
+            type: DataTypes.INTEGER,
         },
-        day:{
-            type:DataTypes.STRING
+
+        day: {
+            type: DataTypes.STRING,
         },
-        is_reservation :{
-            type:DataTypes.BOOLEAN
+
+        time_stamp_start: {
+            type: DataTypes.STRING,
         },
-        is_confirm:{
-            type:DataTypes.BOOLEAN
+
+        time_stamp_end: {
+            type: DataTypes.STRING,
         },
-        is_interviewed_meet:{
-            type:DataTypes.BOOLEAN
+
+        is_reservation: {
+            type: DataTypes.BOOLEAN,
+        },
+
+        is_confirm: {
+            type: DataTypes.BOOLEAN,
+        },
+
+        is_interviewed_meet: {
+            type: DataTypes.BOOLEAN,
         },
     },
     {
@@ -42,22 +56,20 @@ CalendarTeacher.init(
     },
 );
 
-CalendarTeacher.belongsTo(Calendar , {
-    foreignKey : 'calendar_id',
-    targetKey:'id',
-    as:'calendarTeacherData',
-})
-CalendarTeacher.belongsTo(User,{
-    foreignKey:'teacher_id',
-    targetKey:'id',
-    as:'teacherData'
-})
-CalendarTeacher.belongsTo(Student,{
-    foreignKey:'student_id',
-    targetKey:'id',
-    as:'studentData'
-})
-
-
+CalendarTeacher.belongsTo(Calendar, {
+    foreignKey: 'calendar_id',
+    targetKey: 'id',
+    as: 'calendarTeacherData',
+});
+CalendarTeacher.belongsTo(User, {
+    foreignKey: 'teacher_id',
+    targetKey: 'id',
+    as: 'teacherData',
+});
+CalendarTeacher.belongsTo(Student, {
+    foreignKey: 'student_id',
+    targetKey: 'id',
+    as: 'studentData',
+});
 
 export default CalendarTeacher;

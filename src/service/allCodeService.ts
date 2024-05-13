@@ -15,6 +15,28 @@ class allCodeService {
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }
+
+    async getAllCodeByType(type: string) {
+        try {
+            const query: any = {};
+
+            if (type.toLocaleLowerCase() !== 'all') {
+                query.where = {
+                    type,
+                };
+            }
+            let data = await AllCode.findAll({
+                ...query,
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            });
+            return ResponseHandler(httpStatus.OK, data, 'ok');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
 }
 
 export default new allCodeService();
