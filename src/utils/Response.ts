@@ -1,4 +1,4 @@
-import  { HttpStatus } from 'http-status';
+import { HttpStatus } from 'http-status';
 
 export const ResponseHandler = <T>(
     HttpStatus: number,
@@ -10,8 +10,8 @@ export const ResponseHandler = <T>(
     msg: string;
 } => {
     return {
-        code : HttpStatus ,
-        data,
+        code: HttpStatus,
         msg,
+        data,
     };
 };

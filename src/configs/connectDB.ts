@@ -3,6 +3,12 @@ import { Sequelize } from 'sequelize';
 export const sequelize = new Sequelize('system_manage', 'sa', '123456', {
     dialect: 'mssql',
     host: 'localhost',
+    define: {
+        charset: 'utf8',
+        collate: 'utf8_general_ci',
+        timestamps: true,
+    },
+    logging: true,
 });
 
 export default async function connectDB() {
