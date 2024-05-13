@@ -1,14 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
+import Question from './Question';
 
-class Answer extends Model {
-    static associate(models : any) {
-        Answer.belongsTo(models.Question,{
-            foreignKey:"question_id"
-
-        })
-    }
-}
+class Answer extends Model {}
 Answer.init(
     {
         id: {
@@ -23,8 +17,8 @@ Answer.init(
         is_right: {
             type: DataTypes.BOOLEAN,
         },
-        question_id:{
-            type:DataTypes.INTEGER
+        question_id: {
+            type: DataTypes.INTEGER,
         },
     },
     {
@@ -32,5 +26,11 @@ Answer.init(
         modelName: 'Answer',
     },
 );
+
+Answer.belongsTo(Question, {
+    foreignKey: 'question_id',
+    targetKey: 'id',
+    as: 'answerData',
+});
 
 export default Answer;

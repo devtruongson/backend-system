@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 import Question from './Question';
+import Exam from './Exam';
 
 class ExamQuestion extends Model {
     // static associate(models : any) {
@@ -37,8 +38,15 @@ ExamQuestion.init(
     },
 );
 
+ExamQuestion.belongsTo(Exam , {
+    foreignKey:"exam_id",
+    targetKey:'id',
+    as:'ExamData',
+})
 ExamQuestion.belongsTo(Question, {
     foreignKey: 'question_id',
+    targetKey:'id',
+    as:'QuestionData',
 });
 
 export default ExamQuestion;

@@ -1,19 +1,10 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
+import Calendar from './Calendar';
+import User from './User';
+import Student from './Student';
 
-class CalendarTeacher extends Model {
-    static associate(models : any) {
-        CalendarTeacher.belongsTo(models.Calendar, {
-            foreignKey: "calendar_id"
-        })
-        CalendarTeacher.belongsTo(models.User, {
-            foreignKey:"teacher_id"
-        })
-        CalendarTeacher.belongsTo(models.Student, {
-            foreignKey:"student_id"
-        })
-    }
-}
+class CalendarTeacher extends Model {}
 
 CalendarTeacher.init(
     {
@@ -50,5 +41,23 @@ CalendarTeacher.init(
         modelName: 'CalendarTeacher',
     },
 );
+
+CalendarTeacher.belongsTo(Calendar , {
+    foreignKey : 'calendar_id',
+    targetKey:'id',
+    as:'calendarTeacherData',
+})
+CalendarTeacher.belongsTo(User,{
+    foreignKey:'teacher_id',
+    targetKey:'id',
+    as:'teacherData'
+})
+CalendarTeacher.belongsTo(Student,{
+    foreignKey:'student_id',
+    targetKey:'id',
+    as:'studentData'
+})
+
+
 
 export default CalendarTeacher;
