@@ -74,10 +74,4 @@ User.belongsTo(AllCode, {
     as: 'addressData',
 });
 
-User.belongsTo(AllCode , {
-    foreignKey:'address',
-    targetKey:'id',
-    as:'addressData',
-})
-
 export default User;

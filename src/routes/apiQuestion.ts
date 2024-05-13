@@ -4,7 +4,7 @@ import { handleCheckTokenTeacher } from '~/middleware/jwtActions';
 
 const router = express.Router();
 
-const initApiAnswer = (app: Express) => {
+const initApiQuestion = (app: Express) => {
     router.post(
         '/',
         // handleCheckTokenTeacher,
@@ -32,4 +32,4 @@ const initApiAnswer = (app: Express) => {
     return app.use('/v1/answer', router);
 };
 
-export default initApiAnswer;
+export default initApiQuestion;
