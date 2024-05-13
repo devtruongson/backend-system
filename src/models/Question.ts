@@ -19,14 +19,14 @@ Question.init(
         file: {
             type: DataTypes.STRING,
         },
-        suggest:{
-            type:DataTypes.STRING
+        suggest: {
+            type: DataTypes.STRING,
         },
-        level:{
-            type:DataTypes.INTEGER
+        level: {
+            type: DataTypes.INTEGER,
         },
-        author_id :{
-            type:DataTypes.INTEGER
+        author_id: {
+            type: DataTypes.INTEGER,
         },
     },
     {
@@ -36,15 +36,14 @@ Question.init(
 );
 
 Question.belongsTo(AllCode, {
-    foreignKey:"level",
-    targetKey:'id',
-    as:'LevelData'
-
+    foreignKey: 'level',
+    targetKey: 'id',
+    as: 'LevelData',
 });
-Question.belongsTo(User , {
-    foreignKey:"author_id",
-    targetKey:'id',
-    as:'AuthorData'
-})
+Question.belongsTo(User, {
+    foreignKey: 'author_id',
+    targetKey: 'id',
+    as: 'AuthorData',
+});
 
 export default Question;

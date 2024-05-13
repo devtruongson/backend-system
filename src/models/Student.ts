@@ -12,36 +12,36 @@ Student.init(
             allowNull: false,
             autoIncrement: true,
         },
-       
+
         fullName: {
             type: DataTypes.STRING,
         },
-        phoneNumber:{
-            type:DataTypes.STRING
+        phoneNumber: {
+            type: DataTypes.STRING,
         },
-        email:{
-            type:DataTypes.STRING
+        email: {
+            type: DataTypes.STRING,
         },
-        birthday:{
-            type:DataTypes.STRING
+        birthday: {
+            type: DataTypes.STRING,
         },
-        gender:{
-            type:DataTypes.BOOLEAN
+        gender: {
+            type: DataTypes.BOOLEAN,
         },
-        password:{
-            type:DataTypes.STRING
+        password: {
+            type: DataTypes.STRING,
         },
-        avatar:{
-            type:DataTypes.STRING
+        avatar: {
+            type: DataTypes.STRING,
         },
-        level :{
-            type:DataTypes.INTEGER
+        level: {
+            type: DataTypes.INTEGER,
         },
-        address:{
-            type:DataTypes.INTEGER
+        address: {
+            type: DataTypes.INTEGER,
         },
-        address_detail:{
-            type:DataTypes.STRING
+        address_detail: {
+            type: DataTypes.STRING,
         },
     },
     {
@@ -51,9 +51,9 @@ Student.init(
 );
 
 Student.belongsTo(AllCode, {
-    foreignKey: "address",
-    targetKey:'id',
-    as:'AllCodeData'
-})
+    foreignKey: 'address',
+    targetKey: 'id',
+    as: 'AllCodeData',
+});
 
 export default Student;

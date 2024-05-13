@@ -1,5 +1,4 @@
 import httpStatus from 'http-status';
-import { title } from 'process';
 import { createCourseDto } from '~/dto/createCourse.dto';
 import { queryGetData } from '~/dto/queryGetData.dto';
 import { handleRemoveThumbnailCourse } from '~/helpers/handleRemoveImg';
@@ -55,9 +54,9 @@ class CourserService {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, "course is don't exists");
             }
 
-            // if (!handleRemoveThumbnailCourse(course.thumbnail)) {
-            //     return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't remove thumbnail");
-            // }
+            if (!handleRemoveThumbnailCourse(course.thumbnail)) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't remove thumbnail");
+            }
 
             await Course.destroy({
                 where: { code: code },
@@ -114,6 +113,18 @@ class CourserService {
 
     async updateCourService(data: createCourseDto) {
         try {
+            let course = (await this.handleCheckCodeExit(data.code, 'query')) as createCourseDto;
+
+            if (!course) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, "course is don't exists");
+            }
+
+            if (data.thumbnail !== course.thumbnail) {
+                if (!handleRemoveThumbnailCourse(course.thumbnail)) {
+                    return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't remove thumbnail old");
+                }
+            }
+
             await Course.update(
                 {
                     ...data,
