@@ -1,16 +1,9 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
+import AllCode from './AllCode';
+import Student from './Student';
 
-class Parent extends Model {
-    static associate(models : any) {
-        Parent.belongsTo(models.AllCode, {
-            foreignKey: "association_for_student"
-        });
-        Parent.belongsTo(models.Student, {
-            foreignKey: "child"
-        });
-    }
-}
+class Parent extends Model {}
 
 Parent.init(
     {
@@ -36,5 +29,15 @@ Parent.init(
         modelName: 'Parent',
     },
 );
+
+Parent.belongsTo(AllCode, {
+    foreignKey: "association_for_student",
+    targetKey:'AssociationData'
+});
+Parent.belongsTo(Student, {
+    foreignKey: "child",
+    targetKey:'id',
+    as:'ParentData'
+});
 
 export default Parent;

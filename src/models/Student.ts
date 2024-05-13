@@ -1,15 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
+import AllCode from './AllCode';
 
-class Student extends Model {
-    static associate(models : any) {
-        Student.hasMany(models.Parent);
-        Student.hasMany(models.CalendarTeacher);
-        Student.belongsTo(models.AllCode, {
-            foreignKey: "address"
-        })
-    }
-}
+class Student extends Model {}
 
 Student.init(
     {
@@ -56,5 +49,11 @@ Student.init(
         modelName: 'Student',
     },
 );
+
+Student.belongsTo(AllCode, {
+    foreignKey: "address",
+    targetKey:'id',
+    as:'AllCodeData'
+})
 
 export default Student;

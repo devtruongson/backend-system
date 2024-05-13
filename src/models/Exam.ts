@@ -1,11 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 
-class Exam extends Model {
-    static associate(models : any) {
-        Exam.hasMany(models.ExamQuestion);
-    }
-}
+class Exam extends Model {}
 
 Exam.init(
     {

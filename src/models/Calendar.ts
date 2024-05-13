@@ -1,11 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 
-class Calendar extends Model {
-    static associate(models : any) {
-        Calendar.hasMany(models.CalendarTeacher)
-    }
-}
+class Calendar extends Model {}
 
 Calendar.init(
     {
@@ -28,5 +24,6 @@ Calendar.init(
         modelName: 'Calendar',
     },
 );
+
 
 export default Calendar;

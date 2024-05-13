@@ -1,18 +1,9 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
+import AllCode from './AllCode';
+import User from './User';
 
-class Question extends Model {
-    static associate(models : any) {
-        Question.hasMany(models.Answer);
-        Question.belongsTo(models.AllCode, {
-            foreignKey:"level"
-        });
-        Question.hasMany(models.ExamQuestion);
-        Question.belongsTo(models.User , {
-            foreignKey:"author_id"
-        })
-    }
-}
+class Question extends Model {}
 
 Question.init(
     {
@@ -43,5 +34,17 @@ Question.init(
         modelName: 'Question',
     },
 );
+
+Question.belongsTo(AllCode, {
+    foreignKey:"level",
+    targetKey:'id',
+    as:'LevelData'
+
+});
+Question.belongsTo(User , {
+    foreignKey:"author_id",
+    targetKey:'id',
+    as:'AuthorData'
+})
 
 export default Question;
