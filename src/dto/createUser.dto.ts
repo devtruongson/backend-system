@@ -3,8 +3,7 @@ import { IsNotEmpty, IsEmail, IsString, IsNumberString, IsNumber, MinLength } fr
 export class CreateUserDto {
     constructor() {}
 
-    @IsNumber()
-    id:number
+   
 
     @IsNotEmpty()
     @IsNumber()

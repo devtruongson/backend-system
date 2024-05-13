@@ -46,7 +46,7 @@ Course.init(
 Course.belongsTo(AllCode, {
     foreignKey:"training_sector",
     targetKey:'id',
-    as:'AllCodeData'
+    as:'TrainingSectorData'
 
 })
 

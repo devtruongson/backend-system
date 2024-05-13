@@ -1,41 +1,43 @@
-import { IsBoolean, IsNotEmpty, IsNumber, IsString } from "class-validator";
+import { IsNotEmpty } from 'class-validator';
 
 export class createCourseDto {
+    // @IsNumber()
+    id: number;
 
-    @IsString()
+    // @IsString()
     @IsNotEmpty()
-    title :string;
+    title: string;
 
-    @IsString()
-    code:string;
+    // @IsString()
+    code: string;
 
-    @IsBoolean()
+    // @IsBoolean()
     @IsNotEmpty()
     is_free: boolean;
 
-    @IsBoolean()
+    // @IsBoolean()
     @IsNotEmpty()
     is_try_learning: boolean;
 
-    @IsString()
+    // @IsString()
     @IsNotEmpty()
-    price:string;
-    
-    @IsString()
-    @IsNotEmpty()
-    thumbnail:string;
+    price: string;
 
-    @IsNumber()
+    // @IsString()
+    @IsNotEmpty()
+    thumbnail: string;
+
+    // @IsNumber()
     @IsNotEmpty()
     training_sector: number;
 
-    @IsNumber()
+    // @IsNumber()
     @IsNotEmpty()
-    discount : string
+    discount: string;
 
-    @IsString()
-    createdAt:string
+    // @IsString()
+    createdAt: string;
 
-    @IsString()
-    updatedAt : string
+    // @IsString()
+    updatedAt: string;
 }

@@ -17,8 +17,8 @@ Answer.init(
         is_right: {
             type: DataTypes.BOOLEAN,
         },
-        question_id:{
-            type:DataTypes.INTEGER
+        question_id: {
+            type: DataTypes.INTEGER,
         },
     },
     {
@@ -27,10 +27,10 @@ Answer.init(
     },
 );
 
-Answer.belongsTo(Question,{
-    foreignKey:"question_id",
-    targetKey:'id',
-    as:'answerData'
-})
+Answer.belongsTo(Question, {
+    foreignKey: 'question_id',
+    targetKey: 'id',
+    as: 'answerData',
+});
 
 export default Answer;
