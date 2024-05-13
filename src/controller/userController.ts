@@ -35,8 +35,17 @@ class UserController {
 
     async getAllUsers(req: Request, res: Response) {
         try {
-            await validateData(loginDto, req.body, res);
-            const data = await userService.loginUser(req.body);
+            const data = await userService.getAllUsers(req.query);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
+    async getOneUser(req: Request, res: Response) {
+        try {
+            const data = await userService.getOneUser(+req.params.id);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);

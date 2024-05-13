@@ -49,7 +49,7 @@ class UserService {
                     phoneNumber: dataCheck.User.phoneNumber,
                     is_login_social: dataCheck.User.is_login_social,
                     role: dataCheck.User.role,
-                    role_detail: '',
+                    role_detail: dataCheck.User?.roleData?.code || 'USER',
                 },
                 '30day',
             );
@@ -60,16 +60,20 @@ class UserService {
                     phoneNumber: dataCheck.User.phoneNumber,
                     is_login_social: dataCheck.User.is_login_social,
                     role: dataCheck.User.role,
-                    role_detail: '',
+                    role_detail: dataCheck.User?.roleData?.code || 'USER',
                 },
                 '360day',
             );
+            const user = {
+                ...dataCheck.User,
+            } as any;
+            delete user.password;
 
             if (checkPassword) {
                 return ResponseHandler(
                     httpStatus.OK,
                     {
-                        user: dataCheck.User,
+                        user: user,
                         tokens: {
                             access_token: tokenAccess,
                             refresh_token: tokenRefresh,
@@ -79,6 +83,79 @@ class UserService {
                 );
             } else {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Wrong password');
+            }
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getAllUsers(data: any) {
+        try {
+            let offset: number = (data.page - 1) * data.pageSize;
+            let { count, rows } = await User.findAndCountAll({
+                include: [
+                    {
+                        model: AllCode,
+                        as: 'roleData',
+                        attributes: ['type', 'title', 'code'],
+                    },
+                    {
+                        model: AllCode,
+                        as: 'addressData',
+                        attributes: ['type', 'title', 'code'],
+                    },
+                ],
+                attributes: {
+                    exclude: ['password', 'createdAt', 'updatedAt'],
+                },
+                offset: offset,
+                limit: data.pageSize,
+            });
+
+            let resData = {
+                items: rows,
+                meta: {
+                    currentPage: data.page,
+                    totalIteams: count,
+                    totalPages: Math.ceil(count / data.pageSize),
+                },
+            };
+            return ResponseHandler(httpStatus.OK, resData, 'ok');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getOneUser(id: number) {
+        try {
+            const user = await User.findOne({
+                where: {
+                    id,
+                },
+                include: [
+                    {
+                        model: AllCode,
+                        as: 'roleData',
+                        attributes: ['type', 'title', 'code'],
+                    },
+                    {
+                        model: AllCode,
+                        as: 'addressData',
+                        attributes: ['type', 'title', 'code'],
+                    },
+                ],
+                attributes: {
+                    exclude: ['password', 'createdAt', 'updatedAt'],
+                },
+                raw: true,
+                nest: true,
+            });
+            if (!user) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, {}, 'not found');
+            } else {
+                return ResponseHandler(httpStatus.OK, user, 'ok');
             }
         } catch (err) {
             console.log(err);
@@ -108,16 +185,9 @@ class UserService {
                     attributes: ['type', 'title', 'code'],
                 },
             ],
+            raw: true,
+            nest: true,
         })) as IUser | null;
-
-        /* 
-        (await User.findOne({
-            where: {
-                email,
-            },
-            include: [{ model: AllCode, as: 'roleData' }],
-        })) as IUser | null;
-        */
 
         if (user) {
             isValid = true;

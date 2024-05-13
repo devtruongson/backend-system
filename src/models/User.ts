@@ -68,5 +68,10 @@ User.belongsTo(AllCode, {
     targetKey: 'id',
     as: 'roleData',
 });
+User.belongsTo(AllCode, {
+    foreignKey: 'address',
+    targetKey: 'id',
+    as: 'addressData',
+});
 
 export default User;

@@ -20,4 +20,9 @@ export interface IUser {
     is_login_social: boolean;
     age: string;
     gender: boolean;
+    roleData?: {
+        type: string;
+        title: string;
+        code: string;
+    };
 }

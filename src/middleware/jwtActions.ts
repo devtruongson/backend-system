@@ -51,11 +51,46 @@ export const handleCheckTokenUser = (req: Request, res: Response, next: NextFunc
 
         req.body.token_author = decode.email;
 
-        if (decode.role_detail === role.USER) {
+        if (decode.role_detail === role.USER || decode.role_detail === role.ADMIN) {
             next();
+        } else {
+            return res.status(403).json(ResponseHandler(httpStatus.FORBIDDEN, null, "your role aren't user"));
         }
+    } catch (err) {
+        console.log(err);
+        return res
+            .status(httpStatus.INTERNAL_SERVER_ERROR)
+            .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+    }
+};
 
-        return res.status(403).json(ResponseHandler(httpStatus.FORBIDDEN, null, "your role aren't user"));
+// SYSTEM
+export const handleCheckTokenUserInSystem = (req: Request, res: Response, next: NextFunction) => {
+    try {
+        if (!req.headers.authorization)
+            return res
+                .status(httpStatus.UNAUTHORIZED)
+                .json(ResponseHandler(httpStatus.UNAUTHORIZED, null, 'token not found'));
+
+        const token = req.headers.authorization?.replace('Bearer', '').trim();
+
+        let decode = handleVerifyToken(token);
+
+        if (!decode)
+            return res
+                .status(httpStatus.FORBIDDEN)
+                .json(ResponseHandler(httpStatus.FORBIDDEN, null, "token can't decoded"));
+
+        req.body.token_author = decode.email;
+        if (
+            decode.role_detail === role.ADMIN ||
+            decode.role_detail === role.SALE ||
+            decode.role_detail === role.TEACHER
+        ) {
+            next();
+        } else {
+            return res.status(403).json(ResponseHandler(httpStatus.FORBIDDEN, null, "your role aren't user"));
+        }
     } catch (err) {
         console.log(err);
         return res
@@ -84,11 +119,11 @@ export const handleCheckTokenTeacher = (req: Request, res: Response, next: NextF
 
         req.body.token_author = decode.email;
 
-        if (decode.role_detail === role.TEACHER) {
+        if (decode.role_detail === role.TEACHER || decode.role_detail === role.ADMIN) {
             next();
+        } else {
+            return res.status(403).json(ResponseHandler(httpStatus.FORBIDDEN, null, "your role aren't teacher"));
         }
-
-        return res.status(403).json(ResponseHandler(httpStatus.FORBIDDEN, null, "your role aren't teacher"));
     } catch (err) {
         console.log(err);
         return res
@@ -119,16 +154,18 @@ export const handleCheckTokenSale = (req: Request, res: Response, next: NextFunc
         const token = req.headers.authorization?.replace('Bearer', '').trim();
 
         let decode = handleVerifyToken(token);
-    
-        if(!decode) return res.status(httpStatus.FORBIDDEN).json(ResponseHandler(httpStatus.FORBIDDEN, null , "token can't decoded"));
+
+        if (!decode)
+            return res
+                .status(httpStatus.FORBIDDEN)
+                .json(ResponseHandler(httpStatus.FORBIDDEN, null, "token can't decoded"));
         req.body.token_author = decode?.email;
 
-
-        if (decode.role_detail === role.SALE) {
+        if (decode.role_detail === role.SALE || decode.role_detail === role.ADMIN) {
             next();
+        } else {
+            return res.status(403).json(ResponseHandler(httpStatus.FORBIDDEN, null, "your role aren't sale"));
         }
-
-        return res.status(403).json(ResponseHandler(httpStatus.FORBIDDEN, null, "your role aren't sale"));
     } catch (err) {
         console.log(err);
         return res
@@ -155,13 +192,12 @@ export const handleCheckTokenAdmin = (req: Request, res: Response, next: NextFun
                 .status(httpStatus.FORBIDDEN)
                 .json(ResponseHandler(httpStatus.FORBIDDEN, null, "token can't decoded"));
 
-        req.body.token_author = decode.email;
-
         if (decode.role_detail === role.ADMIN) {
+            req.body.token_author = decode.email;
             next();
+        } else {
+            return res.status(403).json(ResponseHandler(httpStatus.FORBIDDEN, null, "your role aren't admin"));
         }
-
-        return res.status(403).json(ResponseHandler(httpStatus.FORBIDDEN, null, "your role aren't admin"));
     } catch (err) {
         console.log(err);
         return res
