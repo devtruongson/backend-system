@@ -18,23 +18,23 @@ Course.init(
         code: {
             type: DataTypes.STRING,
         },
-        is_free:{
-            type:DataTypes.BOOLEAN
+        is_free: {
+            type: DataTypes.BOOLEAN,
         },
-        is_try_learning:{
-            type:DataTypes.BOOLEAN
+        is_try_learning: {
+            type: DataTypes.BOOLEAN,
         },
-        price :{
-            type:DataTypes.STRING
+        price: {
+            type: DataTypes.STRING,
         },
-        thumbnail:{
-            type:DataTypes.STRING
+        thumbnail: {
+            type: DataTypes.STRING,
         },
-        training_sector:{
-            type:DataTypes.INTEGER
+        training_sector: {
+            type: DataTypes.INTEGER,
         },
-        discount:{
-            type:DataTypes.STRING
+        discount: {
+            type: DataTypes.STRING,
         },
     },
     {
@@ -44,10 +44,9 @@ Course.init(
 );
 
 Course.belongsTo(AllCode, {
-    foreignKey:"training_sector",
-    targetKey:'id',
-    as:'TrainingSectorData'
-
-})
+    foreignKey: 'training_sector',
+    targetKey: 'id',
+    as: 'TrainingSectorData',
+});
 
 export default Course;

@@ -1,29 +1,25 @@
 import { Request, Response } from 'express';
 import httpStatus from 'http-status';
-import { createCourseDto } from '~/dto/createCourse.dto';
-import courserService from '~/service/courseService';
+import { questionDto } from '~/dto/createQuestion.dto';
+import questionService from '~/service/questionService';
 import { ResponseHandler } from '~/utils/Response';
 import { validateData } from '~/utils/validate';
-import { v4 as uuidv4 } from 'uuid';
-import { queryGetData } from '~/dto/queryGetData.dto';
-import courseService from '~/service/courseService';
 
-class CourseController {
-    //
+class questionController {
     // GET
 
-    async handleGetCourse(req: Request, res: Response) {
+    async handleGetQuestion(req: Request, res: Response) {
         try {
-            let query: queryGetData = {
-                page: parseInt(req.query.page as string),
-                pageSize: parseInt(req.query.pageSize as string),
-            };
+            let page = req.query?.page as number | undefined;
+            let pageSize = req.query?.pageSize as number | undefined;
+            let authorId = req.query?.authorId as number | undefined;
 
             let data;
-            if (!query.page || !query.pageSize) {
-                data = await courseService.getAllCourseService();
+
+            if (!page || !pageSize || !authorId) {
+                data = await questionService.getAllQuestionService();
             } else {
-                data = await courserService.getCourseService(query);
+                data = await questionService.getQuestionService(+page, +pageSize, +authorId);
             }
 
             return res.status(httpStatus.OK).json(data);
@@ -37,17 +33,10 @@ class CourseController {
 
     //CREATE
 
-    async handleCreateCoure(req: Request, res: Response) {
+    async handleCreateQuestion(req: Request, res: Response) {
         try {
-            await validateData(createCourseDto, req.body, res);
-
-            let dataBuider = {
-                ...req.body,
-                code: uuidv4().slice(0, 6).toUpperCase(),
-            };
-
-            const data = await courserService.createCourseService(dataBuider);
-
+            await validateData(questionDto, req.body, res);
+            let data = await questionService.createQuestionService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
@@ -59,12 +48,10 @@ class CourseController {
 
     //DELETE
 
-    async handleDeleteCourse(req: Request, res: Response) {
+    async handleDeleteQuestion(req: Request, res: Response) {
         try {
-            let code: string = req.query.code as string;
-
-            let data = await courserService.deleteCourseService(code);
-
+            let id = +req.params.id;
+            let data = await questionService.deleteQuestionService(id);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
@@ -74,14 +61,12 @@ class CourseController {
         }
     }
 
-    // UPDATE
+    //UPDATE
 
-    async handleUpdateCourse(req: Request, res: Response) {
+    async handleUpdateQuestion(req: Request, res: Response) {
         try {
-            await validateData(createCourseDto, req.body, res);
-
-            const data = await courseService.updateCourService(req.body);
-
+            await validateData(questionDto, req.body, res);
+            let data = await questionService.updateQuestionService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
@@ -92,6 +77,4 @@ class CourseController {
     }
 }
 
-const courseController = new CourseController();
-
-export default courseController;
+export default new questionController();

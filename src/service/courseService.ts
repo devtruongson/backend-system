@@ -1,7 +1,7 @@
 import httpStatus from 'http-status';
 import { createCourseDto } from '~/dto/createCourse.dto';
 import { queryGetData } from '~/dto/queryGetData.dto';
-import { handleRemoveThumbnailCourse } from '~/helpers/handleRemoveImg';
+import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import AllCode from '~/models/AllCode';
 import Course from '~/models/Course';
 import { ResponseHandler } from '~/utils/Response';
@@ -54,7 +54,7 @@ class CourserService {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, "course is don't exists");
             }
 
-            if (!handleRemoveThumbnailCourse(course.thumbnail)) {
+            if (!handleRemoveFile(course.thumbnail, 'courseImage')) {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't remove thumbnail");
             }
 
@@ -113,16 +113,8 @@ class CourserService {
 
     async updateCourService(data: createCourseDto) {
         try {
-            let course = (await this.handleCheckCodeExit(data.code, 'query')) as createCourseDto;
-
-            if (!course) {
-                return ResponseHandler(httpStatus.BAD_REQUEST, null, "course is don't exists");
-            }
-
-            if (data.thumbnail !== course.thumbnail) {
-                if (!handleRemoveThumbnailCourse(course.thumbnail)) {
-                    return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't remove thumbnail old");
-                }
+            if (data.isChangeFile && data.fileOld && !handleRemoveFile(data.fileOld, 'courseImage')) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't remove thumbnail");
             }
 
             await Course.update(

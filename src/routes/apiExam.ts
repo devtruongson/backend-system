@@ -1,35 +1,37 @@
 import express, { Express } from 'express';
 import { handleCheckTokenTeacher } from '~/middleware/jwtActions';
-import questionController from '~/controller/questionController';
+import examController from '~/controller/examController';
 
 const router = express.Router();
 
-const initApiQuestion = (app: Express) => {
+const initApiExam = (app: Express) => {
     router.post(
         '/',
         // handleCheckTokenTeacher,
-        questionController.handleCreateQuestion,
+        examController.handleCreateExam,
     );
 
     router.get(
         '/',
         // handleCheckTokenTeacher,
-        questionController.handleGetQuestion,
+        examController.handleGetExam,
     );
 
     router.delete(
         '/:id',
         // handleCheckTokenTeacher,
-        questionController.handleDeleteQuestion,
+        examController.handleDeleteExam,
     );
 
     router.put(
         '/',
         // handleCheckTokenTeacher,
-        questionController.handleUpdateQuestion,
+        examController.handleUpdateInfoExam,
     );
 
-    return app.use('/v1/question', router);
+    router.put('/score', examController.handleUpdateScoreExam);
+
+    return app.use('/v1/exam', router);
 };
 
-export default initApiQuestion;
+export default initApiExam;

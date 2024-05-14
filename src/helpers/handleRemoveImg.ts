@@ -1,9 +1,9 @@
-import fs from 'fs'
+import fs from 'fs';
 
-export const handleRemoveThumbnailCourse = (path : string) : boolean => {
-    try{
+export const handleRemoveFile = (path: string, location: string): boolean => {
+    try {
         if (path) {
-            fs.unlink(`./src/public/courseImage/${path}`, (err) => {
+            fs.unlink(`./src/public/${location}/${path}`, (err) => {
                 if (err) {
                     console.error(err);
                     return;
@@ -13,9 +13,8 @@ export const handleRemoveThumbnailCourse = (path : string) : boolean => {
         } else {
             return false;
         }
-    }catch(err){
+    } catch (err) {
         console.log(err);
         return false;
     }
-    
 };

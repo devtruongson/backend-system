@@ -1,9 +1,12 @@
 import httpStatus from 'http-status';
 import { answerDto } from '~/dto/createAnswer.dto';
 import Answer from '~/models/Answer';
+import Question from '~/models/Question';
 import { ResponseHandler } from '~/utils/Response';
 
 class answerService {
+    // CREATE
+
     async createAnswerService(data: any) {
         try {
             await Answer.bulkCreate(data, {
@@ -16,6 +19,8 @@ class answerService {
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }
+
+    //DELETE
 
     async deleteAnswerService(id: number) {
         try {
@@ -30,10 +35,13 @@ class answerService {
         }
     }
 
+    // GET
+
     async getAnswerService(questionId: number) {
         try {
             let answers = await Answer.findAll({
                 where: { question_id: questionId },
+                include: [{ model: Question, as: 'QuestionData' }],
             });
 
             return ResponseHandler(httpStatus.OK, answers, 'all Answer');
@@ -42,6 +50,8 @@ class answerService {
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }
+
+    // UPDATE
 
     async updateAnswerService(data: answerDto) {
         try {

@@ -40,4 +40,8 @@ export class createCourseDto {
 
     // @IsString()
     updatedAt: string;
+
+    isChangeFile: boolean;
+
+    fileOld: string;
 }

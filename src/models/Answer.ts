@@ -30,7 +30,11 @@ Answer.init(
 Answer.belongsTo(Question, {
     foreignKey: 'question_id',
     targetKey: 'id',
-    as: 'answerData',
+    as: 'QuestionData',
 });
 
+Question.hasMany(Answer, {
+    foreignKey: 'question_id',
+    as: 'answers',
+});
 export default Answer;

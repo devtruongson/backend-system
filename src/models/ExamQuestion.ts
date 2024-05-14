@@ -38,15 +38,21 @@ ExamQuestion.init(
     },
 );
 
-ExamQuestion.belongsTo(Exam , {
-    foreignKey:"exam_id",
-    targetKey:'id',
-    as:'ExamData',
-})
+ExamQuestion.belongsTo(Exam, {
+    foreignKey: 'exam_id',
+    targetKey: 'id',
+    as: 'ExamData',
+});
+
+Exam.hasMany(ExamQuestion, {
+    foreignKey: 'exam_id',
+    as: 'ExamQuestionData',
+});
+
 ExamQuestion.belongsTo(Question, {
     foreignKey: 'question_id',
-    targetKey:'id',
-    as:'QuestionData',
+    targetKey: 'id',
+    as: 'QuestionData',
 });
 
 export default ExamQuestion;

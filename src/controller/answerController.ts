@@ -6,6 +6,8 @@ import { ResponseHandler } from '~/utils/Response';
 import { validateData } from '~/utils/validate';
 
 class answerController {
+    // CREATE
+
     async handleCreateAnswer(req: Request, res: Response) {
         try {
             let listAnswer: answerDto[] = req.body;
@@ -20,6 +22,8 @@ class answerController {
                 .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
         }
     }
+
+    // GET
 
     async handleGetAnswer(req: Request, res: Response) {
         try {
@@ -41,6 +45,8 @@ class answerController {
         }
     }
 
+    //DELETE
+
     async handleDeleteAnswer(req: Request, res: Response) {
         try {
             let id = +req.params.id;
@@ -60,6 +66,8 @@ class answerController {
                 .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
         }
     }
+
+    //UPDATE
 
     async handleUpdateAnswer(req: Request, res: Response) {
         try {

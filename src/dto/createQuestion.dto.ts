@@ -3,11 +3,11 @@ import { IsNotEmpty } from 'class-validator';
 export class questionDto {
     id: number;
 
-    @IsNotEmpty()
     title: string;
 
     file: string;
 
+    @IsNotEmpty()
     suggest: string;
 
     @IsNotEmpty()
@@ -19,4 +19,8 @@ export class questionDto {
     createdAt: string;
 
     updatedAt: string;
+
+    isChangeFile: boolean;
+
+    fileOld: string;
 }

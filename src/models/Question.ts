@@ -38,12 +38,18 @@ Question.init(
 Question.belongsTo(AllCode, {
     foreignKey: 'level',
     targetKey: 'id',
-    as: 'LevelData',
+    as: 'levelData',
 });
+
 Question.belongsTo(User, {
     foreignKey: 'author_id',
     targetKey: 'id',
-    as: 'AuthorData',
+    as: 'authorData',
+});
+
+User.hasMany(Question, {
+    foreignKey: 'author_id',
+    as: 'questions',
 });
 
 export default Question;
