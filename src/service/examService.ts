@@ -37,7 +37,18 @@ class examService {
                                   {
                                       model: ExamQuestion,
                                       as: 'ExamQuestionData',
-                                      include: [{ model: Question, as: 'QuestionData' }],
+                                      attributes: {
+                                          exclude: ['createdAt', 'updatedAt'],
+                                      },
+                                      include: [
+                                          {
+                                              model: Question,
+                                              as: 'QuestionData',
+                                              attributes: {
+                                                  exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                              },
+                                          },
+                                      ],
                                   },
                               ],
                           })
@@ -48,7 +59,18 @@ class examService {
                                     {
                                         model: ExamQuestion,
                                         as: 'ExamQuestionData',
-                                        include: [{ model: Question, as: 'QuestionData' }],
+                                        attributes: {
+                                            exclude: ['createdAt', 'updatedAt'],
+                                        },
+                                        include: [
+                                            {
+                                                model: Question,
+                                                as: 'QuestionData',
+                                                attributes: {
+                                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                                },
+                                            },
+                                        ],
                                     },
                                 ],
                             })
@@ -57,7 +79,18 @@ class examService {
                                     {
                                         model: ExamQuestion,
                                         as: 'ExamQuestionData',
-                                        include: [{ model: Question, as: 'QuestionData' }],
+                                        attributes: {
+                                            exclude: ['createdAt', 'updatedAt'],
+                                        },
+                                        include: [
+                                            {
+                                                model: Question,
+                                                as: 'QuestionData',
+                                                attributes: {
+                                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                                },
+                                            },
+                                        ],
                                     },
                                 ],
                             });
@@ -75,7 +108,18 @@ class examService {
                               {
                                   model: ExamQuestion,
                                   as: 'ExamQuestionData',
-                                  include: [{ model: Question, as: 'QuestionData' }],
+                                  attributes: {
+                                      exclude: ['createdAt', 'updatedAt'],
+                                  },
+                                  include: [
+                                      {
+                                          model: Question,
+                                          as: 'QuestionData',
+                                          attributes: {
+                                              exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                          },
+                                      },
+                                  ],
                               },
                           ],
                           offset: offset,
@@ -88,7 +132,18 @@ class examService {
                                 {
                                     model: ExamQuestion,
                                     as: 'ExamQuestionData',
-                                    include: [{ model: Question, as: 'QuestionData' }],
+                                    attributes: {
+                                        exclude: ['createdAt', 'updatedAt'],
+                                    },
+                                    include: [
+                                        {
+                                            model: Question,
+                                            as: 'QuestionData',
+                                            attributes: {
+                                                exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                            },
+                                        },
+                                    ],
                                 },
                             ],
                             offset: offset,
@@ -99,7 +154,18 @@ class examService {
                                 {
                                     model: ExamQuestion,
                                     as: 'ExamQuestionData',
-                                    include: [{ model: Question, as: 'QuestionData' }],
+                                    attributes: {
+                                        exclude: ['createdAt', 'updatedAt'],
+                                    },
+                                    include: [
+                                        {
+                                            model: Question,
+                                            as: 'QuestionData',
+                                            attributes: {
+                                                exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                            },
+                                        },
+                                    ],
                                 },
                             ],
                             offset: offset,
