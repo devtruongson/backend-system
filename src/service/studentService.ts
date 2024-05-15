@@ -1,28 +1,80 @@
 import httpStatus from 'http-status';
 import { studentDto } from '~/dto/createStudent.dto';
+import { loginDto } from '~/dto/login.dto';
+import { comparePassword, endCodePassword } from '~/helpers/bcrypt';
+import { handleCreateToken } from '~/middleware/jwtActions';
+import AllCode from '~/models/AllCode';
 import Student from '~/models/Student';
 
 import { ResponseHandler } from '~/utils/Response';
 
 class studentService {
-    async handleCheckCodeExit(email: string, type: 'check' | 'query' = 'check'): Promise<boolean | studentDto | null> {
-        let isCheck = false;
-
-        let course = (await Student.findOne({
-            where: { email: email },
+    async checkStudentExit(
+        email: string,
+        type: 'check' | 'query' = 'check',
+    ): Promise<
+        | boolean
+        | {
+              Student: studentDto | null;
+              isValid: boolean;
+          }
+    > {
+        let isValid = false;
+        const student = (await Student.findOne({
+            where: {
+                email,
+            },
+            include: [
+                {
+                    model: AllCode,
+                    as: 'address',
+                    attributes: ['type', 'title', 'code'],
+                },
+            ],
+            raw: true,
+            nest: true,
         })) as studentDto | null;
-        if (course) {
-            isCheck = true;
+
+        if (student) {
+            isValid = true;
         }
 
-        return type === 'check' ? isCheck : course;
+        return type !== 'check'
+            ? {
+                  Student: student,
+                  isValid: isValid,
+              }
+            : isValid;
     }
 
     // CREATE
 
     async createStudentService(data: studentDto) {
         try {
-            return ResponseHandler(httpStatus.OK, null, '');
+            let checkExit = await this.checkStudentExit(data.email);
+
+            if (checkExit) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'User already exists');
+            }
+
+            const passwordHash = await endCodePassword(data.password);
+
+            const student = Student.create({
+                ...data,
+                password: passwordHash,
+            });
+
+            return ResponseHandler(httpStatus.OK, student, 'Create Student Successfully');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    // LOGIN
+
+    async loginStudentService(data: loginDto) {
+        try {
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
