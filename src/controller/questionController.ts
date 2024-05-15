@@ -35,7 +35,9 @@ class questionController {
 
     async handleCreateQuestion(req: Request, res: Response) {
         try {
-            await validateData(questionDto, req.body, res);
+            const isValid = await validateData(questionDto, req.body, res);
+            if (!isValid) return;
+
             let data = await questionService.createQuestionService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
@@ -65,7 +67,8 @@ class questionController {
 
     async handleUpdateQuestion(req: Request, res: Response) {
         try {
-            await validateData(questionDto, req.body, res);
+            const isValid = await validateData(questionDto, req.body, res);
+            if (!isValid) return;
             let data = await questionService.updateQuestionService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {

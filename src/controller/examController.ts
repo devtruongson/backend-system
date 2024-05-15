@@ -12,7 +12,8 @@ class examController {
 
     async handleCreateExam(req: Request, res: Response) {
         try {
-            await validateData(examDto, req.body, res);
+            const isValid = await validateData(examDto, req.body, res);
+            if (!isValid) return;
 
             let dataBuider = {
                 ...req.body,
@@ -73,7 +74,8 @@ class examController {
 
     async handleUpdateInfoExam(req: Request, res: Response) {
         try {
-            await validateData(examDto, req.body, res);
+            const isValid = await validateData(examDto, req.body, res);
+            if (!isValid) return;
             let data = await examService.updateInfoExamService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {

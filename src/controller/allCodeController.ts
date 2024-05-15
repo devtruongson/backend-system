@@ -8,7 +8,8 @@ import { validateData } from '~/utils/validate';
 class allCodeController {
     async createAllCode(req: Request, res: Response) {
         try {
-            await validateData(createAllCodeDTO, req.body, res);
+            const isValid = await validateData(createAllCodeDTO, req.body, res);
+            if (!isValid) return;
             const data = await allCodeService.createAllCode(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (error) {

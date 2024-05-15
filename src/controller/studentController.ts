@@ -26,7 +26,8 @@ class studentController {
 
     async handleLoginStudent(req: Request, res: Response) {
         try {
-            await validateData(loginDto, req.body, res);
+            const isValid = await validateData(loginDto, req.body, res);
+            if (!isValid) return;
             const data = await studentService.loginStudentService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {

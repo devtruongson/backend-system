@@ -12,7 +12,16 @@ class examQuestionController {
     async handleCreateExamQuestion(req: Request, res: Response) {
         try {
             let listData: examQuestionDto[] = req.body;
-            listData.map((item: examQuestionDto) => validateData(examQuestionDto, item, res));
+            let checkValid = true;
+            await Promise.all(
+                listData.map(async (item: examQuestionDto) => {
+                    const isValid = await validateData(examQuestionDto, item, res);
+                    if (!isValid) {
+                        checkValid = false;
+                    }
+                }),
+            );
+            if (!checkValid) return;
 
             let data = await examQuestionService.createExamQuestionService(listData);
             return res.status(httpStatus.OK).json(data);
