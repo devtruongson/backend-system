@@ -11,7 +11,16 @@ class answerController {
     async handleCreateAnswer(req: Request, res: Response) {
         try {
             let listAnswer: answerDto[] = req.body;
-            listAnswer.map((item: answerDto) => validateData(answerDto, item, res));
+            let checkValid = true;
+            await Promise.all(
+                listAnswer.map(async (item: answerDto) => {
+                    const isValid = await validateData(answerDto, item, res);
+                    if (!isValid) {
+                        checkValid = false;
+                    }
+                }),
+            );
+            if (!checkValid) return;
 
             let data = await answerService.createAnswerService(listAnswer);
             return res.status(httpStatus.OK).json(data);
@@ -71,7 +80,8 @@ class answerController {
 
     async handleUpdateAnswer(req: Request, res: Response) {
         try {
-            await validateData(answerDto, req.body, res);
+            const isValid = await validateData(answerDto, req.body, res);
+            if (!isValid) return;
             let data = await answerService.updateAnswerService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {

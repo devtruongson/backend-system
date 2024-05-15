@@ -39,7 +39,8 @@ class CourseController {
 
     async handleCreateCoure(req: Request, res: Response) {
         try {
-            await validateData(createCourseDto, req.body, res);
+            const isValid = await validateData(createCourseDto, req.body, res);
+            if (!isValid) return;
 
             let dataBuider = {
                 ...req.body,
@@ -78,7 +79,8 @@ class CourseController {
 
     async handleUpdateCourse(req: Request, res: Response) {
         try {
-            await validateData(createCourseDto, req.body, res);
+            const isValid = await validateData(createCourseDto, req.body, res);
+            if (!isValid) return;
 
             const data = await courseService.updateCourService(req.body);
 

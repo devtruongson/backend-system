@@ -13,7 +13,8 @@ class UserController {
 
     async handleCreateUser(req: Request, res: Response) {
         try {
-            await validateData(CreateUserDto, req.body, res);
+            const isValid = await validateData(CreateUserDto, req.body, res);
+            if (!isValid) return;
             const data = await userService.createUserService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
@@ -24,7 +25,8 @@ class UserController {
 
     async handleLogin(req: Request, res: Response) {
         try {
-            await validateData(loginDto, req.body, res);
+            const isValid = await validateData(loginDto, req.body, res);
+            if (!isValid) return;
             const data = await userService.loginUser(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {

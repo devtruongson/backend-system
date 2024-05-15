@@ -4,6 +4,7 @@ import { createCalendarDto } from '~/dto/createCalendar.dto';
 import Calendar from '~/models/Calendar';
 import CalendarTeacher from '~/models/CalendarTeacher';
 import Student from '~/models/Student';
+import StudentCourse from '~/models/StudentCourse';
 import User from '~/models/User';
 import { ResponseHandler } from '~/utils/Response';
 
@@ -80,6 +81,9 @@ class calendarService {
                     teacher_id: id,
                     ...query,
                 },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
                 include: [
                     {
                         model: Calendar,
@@ -101,6 +105,9 @@ class calendarService {
                         attributes: {
                             exclude: ['createdAt', 'updatedAt', 'password'],
                         },
+                    },
+                    {
+                        model: StudentCourse,
                     },
                 ],
             });

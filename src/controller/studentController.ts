@@ -23,7 +23,8 @@ class studentController {
 
     async handleCreateStudent(req: Request, res: Response) {
         try {
-            await validateData(studentDto, req.body, res);
+            const isValid = await validateData(studentDto, req.body, res);
+            if (!isValid) return;
             const data = await studentService.createStudentService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
