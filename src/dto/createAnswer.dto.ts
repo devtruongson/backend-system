@@ -4,7 +4,7 @@ export class answerDto {
     id: number;
 
     @IsNotEmpty()
-    answer_title: number;
+    answer_title: string;
 
     @IsNotEmpty()
     is_right: boolean;

@@ -3,16 +3,7 @@ import { sequelize } from '../configs/connectDB';
 import Question from './Question';
 import Exam from './Exam';
 
-class ExamQuestion extends Model {
-    // static associate(models : any) {
-    //     ExamQuestion.belongsTo(models.Exam , {
-    //         foreignKey:"exam_id"
-    //     })
-    //     ExamQuestion.belongsTo(models.Question , {
-    //         foreignKey:'question_id'
-    //     })
-    // }
-}
+class ExamQuestion extends Model {}
 
 ExamQuestion.init(
     {
@@ -30,6 +21,9 @@ ExamQuestion.init(
         },
         is_right: {
             type: DataTypes.BOOLEAN,
+        },
+        selected_answer: {
+            type: DataTypes.INTEGER,
         },
     },
     {

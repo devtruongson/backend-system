@@ -18,7 +18,10 @@ Exam.init(
             type: DataTypes.STRING,
         },
         student_id: {
-            type: DataTypes.STRING,
+            type: DataTypes.INTEGER,
+        },
+        teacher_id: {
+            type: DataTypes.INTEGER,
         },
         title: {
             type: DataTypes.STRING,
@@ -38,8 +41,8 @@ Exam.init(
         level: {
             type: DataTypes.INTEGER,
         },
-        teacher_id: {
-            type: DataTypes.INTEGER,
+        is_completed: {
+            type: DataTypes.BOOLEAN,
         },
     },
     {

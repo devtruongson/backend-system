@@ -1,4 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
+import { examQuestionDto } from './createExamQuestion';
 
 export class examDto {
     id: number;
@@ -27,7 +28,11 @@ export class examDto {
     @IsNotEmpty()
     level: number;
 
+    is_completed: boolean;
+
     createdAt: string;
 
     updatedAt: string;
+
+    ExamQuestionData: examQuestionDto;
 }

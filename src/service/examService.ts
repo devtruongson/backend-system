@@ -1,6 +1,8 @@
 import httpStatus from 'http-status';
-import { where } from 'sequelize';
+import { answerDto } from '~/dto/createAnswer.dto';
 import { examDto } from '~/dto/createExam.dto';
+import { examQuestionDto } from '~/dto/createExamQuestion';
+import Answer from '~/models/Answer';
 import Exam from '~/models/Exam';
 import ExamQuestion from '~/models/ExamQuestion';
 import Question from '~/models/Question';
@@ -220,8 +222,68 @@ class examService {
 
     // UPDATE SCORE EXAM
 
-    async updateScoreExamService(data: examDto) {
+    async updateScoreExamService(listAnswer: number[], examId: number) {
         try {
+            let countSuccess = 0;
+
+            let exam = (await Exam.findOne({
+                where: { id: examId },
+                include: [
+                    {
+                        model: ExamQuestion,
+                        as: 'ExamQuestionData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt'],
+                        },
+                        include: [
+                            {
+                                model: Question,
+                                as: 'QuestionData',
+                                attributes: {
+                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                },
+
+                                include: [{ model: Answer, as: 'answers' }],
+                            },
+                        ],
+                    },
+                ],
+            })) as Exam;
+
+            if (!exam) {
+                return ResponseHandler(httpStatus.NOT_FOUND, null, ' Exam not exits');
+            }
+
+            await exam.dataValues.ExamQuestionData.map((item: examQuestionDto) => {
+                item.QuestionData.answers.map(async (answer: answerDto) => {
+                    if (listAnswer.includes(answer.id)) {
+                        if (answer.is_right) {
+                            countSuccess = countSuccess + 1;
+                        }
+                        await ExamQuestion.update(
+                            {
+                                // is_right: answer.id
+                                selected_answer: answer.id,
+                            },
+                            { where: { id: item.id } },
+                        );
+                    }
+                });
+            });
+
+            console.log(countSuccess);
+
+            await Exam.update(
+                {
+                    correct_result_count: countSuccess,
+                    total_result: countSuccess * (10 / exam.dataValues.total_question),
+                },
+                {
+                    where: { id: examId },
+                },
+            );
+
+            return ResponseHandler(httpStatus.OK, exam, '');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

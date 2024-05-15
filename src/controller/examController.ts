@@ -84,10 +84,12 @@ class examController {
         }
     }
 
+    // UPDATE SCORE EXAM
+
     async handleUpdateScoreExam(req: Request, res: Response) {
         try {
-            await validateData(examDto, req.body, res);
-            let data = await examService.updateScoreExamService(req.body);
+            // await validateData(examDto, req.body, res);
+            let data = await examService.updateScoreExamService(req.body.listAnswer, +req.body.examId);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);

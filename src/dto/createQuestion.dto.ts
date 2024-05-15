@@ -1,4 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
+import { answerDto } from './createAnswer.dto';
 
 export class questionDto {
     id: number;
@@ -23,4 +24,6 @@ export class questionDto {
     isChangeFile: boolean;
 
     fileOld: string;
+
+    answers: answerDto[];
 }
