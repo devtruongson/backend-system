@@ -3,6 +3,7 @@ import httpStatus from 'http-status';
 import { bookCalendarForStudentDto } from '~/dto/bookCalendarForStudent.dto';
 import { bookingCalendarDto } from '~/dto/bookingCalendar.dto';
 import { createCalendarDto } from '~/dto/createCalendar.dto';
+import { studentBookingDto } from '~/dto/studentBooking';
 import calendarService from '~/service/calendarService';
 import { ResponseHandler } from '~/utils/Response';
 import { validateData } from '~/utils/validate';
@@ -67,6 +68,18 @@ class calendarController {
     async getCalendarForStudent(req: Request, res: Response) {
         try {
             const data = await calendarService.getCalendarForStudent(req.body.token_author);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
+    async handleStudentCreateBooking(req: Request, res: Response) {
+        try {
+            let isValid = await validateData(studentBookingDto, req.body, res);
+            if (!isValid) return;
+            let data = await calendarService.studentBooking(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
