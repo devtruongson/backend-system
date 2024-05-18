@@ -9,13 +9,48 @@ import Question from '~/models/Question';
 import { ResponseHandler } from '~/utils/Response';
 
 class examService {
-    //
+    async handleGetOneExam(id: number): Promise<examDto | null> {
+        let exam = (await Exam.findOne({
+            where: { id: id },
+            include: [
+                {
+                    model: ExamQuestion,
+                    as: 'ExamQuestionData',
+                    attributes: {
+                        exclude: ['createdAt', 'updatedAt'],
+                    },
+                    include: [
+                        {
+                            model: Question,
+                            as: 'QuestionData',
+                            attributes: {
+                                exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                            },
+
+                            include: [
+                                {
+                                    model: Answer,
+                                    as: 'answers',
+                                    attributes: {
+                                        exclude: ['createdAt', 'updatedAt'],
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        })) as examDto | null;
+
+        return exam;
+    }
     // CREATE
 
     async createExamService(data: examDto) {
         try {
             await Exam.create({
                 ...data,
+                is_completed: false,
                 correct_result_count: 0,
                 total_result: 0,
             });
@@ -226,36 +261,14 @@ class examService {
         try {
             let countSuccess = 0;
 
-            let exam = (await Exam.findOne({
-                where: { id: examId },
-                include: [
-                    {
-                        model: ExamQuestion,
-                        as: 'ExamQuestionData',
-                        attributes: {
-                            exclude: ['createdAt', 'updatedAt'],
-                        },
-                        include: [
-                            {
-                                model: Question,
-                                as: 'QuestionData',
-                                attributes: {
-                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
-                                },
-
-                                include: [{ model: Answer, as: 'answers' }],
-                            },
-                        ],
-                    },
-                ],
-            })) as Exam;
+            let exam = await this.handleGetOneExam(examId);
 
             if (!exam) {
                 return ResponseHandler(httpStatus.NOT_FOUND, null, ' Exam not exits');
             }
 
             await Promise.all(
-                exam.dataValues.ExamQuestionData.map(async (item: examQuestionDto) => {
+                exam.ExamQuestionData?.map(async (item: examQuestionDto) => {
                     await Promise.all(
                         item.QuestionData.answers.map(async (answer: answerDto) => {
                             if (listAnswer.includes(answer.id)) {
@@ -278,14 +291,19 @@ class examService {
             await Exam.update(
                 {
                     correct_result_count: countSuccess,
-                    total_result: countSuccess * (10 / exam.dataValues.total_question),
+                    total_result: countSuccess * (10 / exam.total_question),
+                    is_completed: true,
                 },
                 {
                     where: { id: examId },
                 },
             );
 
-            return ResponseHandler(httpStatus.OK, exam, '');
+            let data = {
+                point: countSuccess * (10 / exam.total_question),
+            };
+
+            return ResponseHandler(httpStatus.OK, data, '');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

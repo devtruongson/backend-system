@@ -156,7 +156,7 @@ class studentService {
         }
     }
 
-    //UPDATE
+    // UPDATE Profile
 
     async updateStudentService(data: studentDto) {
         try {
