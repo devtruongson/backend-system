@@ -12,4 +12,8 @@ export class bookCalendarForStudentDto {
     @IsNotEmpty()
     @IsNumber()
     teacher_id: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    id_student_course: number;
 }
