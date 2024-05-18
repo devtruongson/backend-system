@@ -11,6 +11,12 @@ const initApiExamQuestion = (app: Express) => {
         examQuestionController.handleCreateExamQuestion,
     );
 
+    router.post(
+        '/auto',
+        // handleCheckTokenTeacher,
+        examQuestionController.handleCreateExamQuestionAuto,
+    );
+
     router.delete(
         '/:id',
         // handleCheckTokenTeacher,
