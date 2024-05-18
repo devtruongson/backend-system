@@ -33,6 +33,25 @@ class examQuestionController {
         }
     }
 
+    // CREATE AUTO
+
+    async handleCreateExamQuestionAuto(req: Request, res: Response) {
+        try {
+            let examId: number = parseInt(req.query.examId as string);
+            let totalQuestion: number = parseInt(req.query.totalQuestion as string);
+            let authorId: number = parseInt(req.query.authorId as string);
+            let level: number = parseInt(req.query.level as string);
+
+            let data = await examQuestionService.createExamQuestionAutoService(examId, totalQuestion, authorId, level);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
+
     //DELETE
 
     async handleDeleteExamQuestion(req: Request, res: Response) {
