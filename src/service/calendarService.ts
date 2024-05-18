@@ -1,4 +1,5 @@
 import httpStatus from 'http-status';
+import { bookCalendarForStudentDto } from '~/dto/bookCalendarForStudent.dto';
 import { bookingCalendarDto } from '~/dto/bookingCalendar.dto';
 import { createCalendarDto } from '~/dto/createCalendar.dto';
 import Calendar from '~/models/Calendar';
@@ -112,6 +113,37 @@ class calendarService {
                 ],
             });
             return ResponseHandler(httpStatus.OK, data, 'ok');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async bookCalendarForStudent(data: bookCalendarForStudentDto) {
+        try {
+            const checkExitCalendar = await CalendarTeacher.findOne({
+                where: {
+                    id: data.calendar_id,
+                    student_id: null,
+                },
+            });
+
+            if (checkExitCalendar) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Bản lịch này đã có người đặt');
+            }
+
+            await CalendarTeacher.update(
+                {
+                    student_id: data.student_id,
+                },
+                {
+                    where: {
+                        id: data.calendar_id,
+                    },
+                },
+            );
+
+            return ResponseHandler(httpStatus.OK, null, 'ok');
         } catch (error) {
             console.log(error);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

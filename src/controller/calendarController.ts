@@ -56,7 +56,7 @@ class calendarController {
         try {
             const isValid = await validateData(bookCalendarForStudentDto, req.body, res);
             if (!isValid) return;
-            // const data = await calendarService.bookCalendarForStudent(req.body);
+            const data = await calendarService.bookCalendarForStudent(req.body);
             console.log('check lot');
             return res.status(httpStatus.OK).json({});
         } catch (err) {
