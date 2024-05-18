@@ -141,13 +141,14 @@ class calendarService {
         try {
             const checkUserExit: any = await Student.findOne({
                 where: { email: email },
+                raw: true,
             });
 
             if (!checkUserExit) {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'student not found');
             }
 
-            const data = await CalendarTeacher.findAll({
+            const data = await StudentCourse.findAll({
                 where: {
                     student_id: checkUserExit.id,
                 },
@@ -156,41 +157,41 @@ class calendarService {
                 },
                 include: [
                     {
-                        model: Calendar,
-                        as: 'calendarTeacherData',
+                        model: Student,
+                        as: 'StudentData',
+                        attributes: {
+                            exclude: ['password', 'createdAt', 'updatedAt'],
+                        },
+                    },
+                    {
+                        model: Course,
+                        as: 'CourseData',
                         attributes: {
                             exclude: ['createdAt', 'updatedAt'],
                         },
-                    },
-                    {
-                        model: User,
-                        as: 'teacherData',
-                        attributes: {
-                            exclude: ['createdAt', 'updatedAt', 'password'],
-                        },
-                    },
-                    {
-                        model: Student,
-                        as: 'studentData',
-                        attributes: {
-                            exclude: ['createdAt', 'updatedAt', 'password'],
-                        },
-                    },
-                    {
-                        model: StudentCourse,
                         include: [
                             {
-                                model: Course,
-                                as: 'CourseData',
+                                model: AllCode,
+                                as: 'TrainingSectorData',
+                            },
+                        ],
+                    },
+                    {
+                        model: CalendarTeacher,
+                        include: [
+                            {
+                                model: Calendar,
+                                as: 'calendarTeacherData',
                                 attributes: {
                                     exclude: ['createdAt', 'updatedAt'],
                                 },
-                                include: [
-                                    {
-                                        model: AllCode,
-                                        as: 'TrainingSectorData',
-                                    },
-                                ],
+                            },
+                            {
+                                model: User,
+                                as: 'teacherData',
+                                attributes: {
+                                    exclude: ['password', 'createdAt', 'updatedAt'],
+                                },
                             },
                         ],
                     },
@@ -227,6 +228,17 @@ class calendarService {
                     where: {
                         id: data.calendar_id,
                         teacher_id: data.teacher_id,
+                    },
+                },
+            );
+
+            await StudentCourse.update(
+                {
+                    calendar_id: data.calendar_id,
+                },
+                {
+                    where: {
+                        id: data.id_student_course,
                     },
                 },
             );
