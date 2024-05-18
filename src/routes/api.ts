@@ -8,6 +8,7 @@ import initCalenderRouter from './apiCalendar';
 import initApiExamQuestion from './apiExamQuestion';
 import initApiExam from './apiExam';
 import initApiStudent from './apiStudent';
+import initApiParent from './apiParent';
 
 const initApiRoutes = (app: Express) => {
     initApiUser(app);
@@ -19,6 +20,7 @@ const initApiRoutes = (app: Express) => {
     initApiExam(app);
     initApiExamQuestion(app);
     initApiStudent(app);
+    initApiParent(app);
 };
 
 export default initApiRoutes;

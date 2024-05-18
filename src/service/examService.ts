@@ -9,13 +9,49 @@ import Question from '~/models/Question';
 import { ResponseHandler } from '~/utils/Response';
 
 class examService {
-    //
+    async handleGetOneExam(id: number): Promise<examDto | null> {
+        let exam = (await Exam.findOne({
+            where: { id: id },
+            include: [
+                {
+                    model: ExamQuestion,
+                    as: 'ExamQuestionData',
+                    attributes: {
+                        exclude: ['createdAt', 'updatedAt'],
+                    },
+                    include: [
+                        {
+                            model: Question,
+                            as: 'QuestionData',
+                            attributes: {
+                                exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                            },
+
+                            include: [
+                                {
+                                    model: Answer,
+                                    as: 'answers',
+                                    attributes: {
+                                        exclude: ['createdAt', 'updatedAt'],
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        })) as examDto | null;
+
+        return exam;
+    }
+
     // CREATE
 
     async createExamService(data: examDto) {
         try {
             await Exam.create({
                 ...data,
+                is_completed: false,
                 correct_result_count: 0,
                 total_result: 0,
             });
@@ -30,149 +66,77 @@ class examService {
 
     async getExamService(id: number, page: number | undefined, pageSize: number | undefined, type: string) {
         try {
+            let query: any = {};
+
+            if (type === 'student') {
+                query.student_id = id;
+            } else if (type === 'teacher') {
+                query.teacher_id = id;
+            }
+
             if (!page || !pageSize) {
-                let data =
-                    type === 'student'
-                        ? await Exam.findAll({
-                              where: { student_id: id },
-                              include: [
-                                  {
-                                      model: ExamQuestion,
-                                      as: 'ExamQuestionData',
-                                      attributes: {
-                                          exclude: ['createdAt', 'updatedAt'],
-                                      },
-                                      include: [
-                                          {
-                                              model: Question,
-                                              as: 'QuestionData',
-                                              attributes: {
-                                                  exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
-                                              },
-                                          },
-                                      ],
-                                  },
-                              ],
-                          })
-                        : type === 'teacher'
-                          ? await Exam.findAll({
-                                where: { teacher_id: id },
-                                include: [
-                                    {
-                                        model: ExamQuestion,
-                                        as: 'ExamQuestionData',
-                                        attributes: {
-                                            exclude: ['createdAt', 'updatedAt'],
-                                        },
-                                        include: [
-                                            {
-                                                model: Question,
-                                                as: 'QuestionData',
-                                                attributes: {
-                                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
-                                                },
-                                            },
-                                        ],
+                let data = await Exam.findAll({
+                    where: { ...query },
+                    include: [
+                        {
+                            model: ExamQuestion,
+                            as: 'ExamQuestionData',
+                            attributes: {
+                                exclude: ['createdAt', 'updatedAt'],
+                            },
+                            include: [
+                                {
+                                    model: Question,
+                                    as: 'QuestionData',
+                                    attributes: {
+                                        exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
                                     },
-                                ],
-                            })
-                          : await Exam.findAll({
-                                include: [
-                                    {
-                                        model: ExamQuestion,
-                                        as: 'ExamQuestionData',
-                                        attributes: {
-                                            exclude: ['createdAt', 'updatedAt'],
+                                    include: [
+                                        {
+                                            model: Answer,
+                                            as: 'answers',
                                         },
-                                        include: [
-                                            {
-                                                model: Question,
-                                                as: 'QuestionData',
-                                                attributes: {
-                                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
-                                                },
-                                            },
-                                        ],
-                                    },
-                                ],
-                            });
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                });
 
                 return ResponseHandler(httpStatus.OK, data, 'All Exam');
             }
 
             let offset: number = (page - 1) * pageSize;
 
-            let { count, rows } =
-                type === 'student'
-                    ? await Exam.findAndCountAll({
-                          where: { student_id: id },
-                          include: [
-                              {
-                                  model: ExamQuestion,
-                                  as: 'ExamQuestionData',
-                                  attributes: {
-                                      exclude: ['createdAt', 'updatedAt'],
-                                  },
-                                  include: [
-                                      {
-                                          model: Question,
-                                          as: 'QuestionData',
-                                          attributes: {
-                                              exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
-                                          },
-                                      },
-                                  ],
-                              },
-                          ],
-                          offset: offset,
-                          limit: pageSize,
-                      })
-                    : type === 'teacher'
-                      ? await Exam.findAndCountAll({
-                            where: { teacher_id: id },
-                            include: [
-                                {
-                                    model: ExamQuestion,
-                                    as: 'ExamQuestionData',
-                                    attributes: {
-                                        exclude: ['createdAt', 'updatedAt'],
-                                    },
-                                    include: [
-                                        {
-                                            model: Question,
-                                            as: 'QuestionData',
-                                            attributes: {
-                                                exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
-                                            },
-                                        },
-                                    ],
+            let { count, rows } = await Exam.findAndCountAll({
+                where: { ...query },
+                include: [
+                    {
+                        model: ExamQuestion,
+                        as: 'ExamQuestionData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt'],
+                        },
+                        include: [
+                            {
+                                model: Question,
+                                as: 'QuestionData',
+                                attributes: {
+                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
                                 },
-                            ],
-                            offset: offset,
-                            limit: pageSize,
-                        })
-                      : await Exam.findAndCountAll({
-                            include: [
-                                {
-                                    model: ExamQuestion,
-                                    as: 'ExamQuestionData',
-                                    attributes: {
-                                        exclude: ['createdAt', 'updatedAt'],
+                                include: [
+                                    {
+                                        model: Answer,
+                                        as: 'answers',
                                     },
-                                    include: [
-                                        {
-                                            model: Question,
-                                            as: 'QuestionData',
-                                            attributes: {
-                                                exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
-                                            },
-                                        },
-                                    ],
-                                },
-                            ],
-                            offset: offset,
-                            limit: pageSize,
-                        });
+                                ],
+                            },
+                        ],
+                    },
+                ],
+                offset: offset,
+                limit: pageSize,
+            });
 
             let resData = {
                 items: rows,
@@ -226,64 +190,49 @@ class examService {
         try {
             let countSuccess = 0;
 
-            let exam = (await Exam.findOne({
-                where: { id: examId },
-                include: [
-                    {
-                        model: ExamQuestion,
-                        as: 'ExamQuestionData',
-                        attributes: {
-                            exclude: ['createdAt', 'updatedAt'],
-                        },
-                        include: [
-                            {
-                                model: Question,
-                                as: 'QuestionData',
-                                attributes: {
-                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
-                                },
-
-                                include: [{ model: Answer, as: 'answers' }],
-                            },
-                        ],
-                    },
-                ],
-            })) as Exam;
+            let exam = await this.handleGetOneExam(examId);
 
             if (!exam) {
                 return ResponseHandler(httpStatus.NOT_FOUND, null, ' Exam not exits');
             }
 
-            await exam.dataValues.ExamQuestionData.map((item: examQuestionDto) => {
-                item.QuestionData.answers.map(async (answer: answerDto) => {
-                    if (listAnswer.includes(answer.id)) {
-                        if (answer.is_right) {
-                            countSuccess = countSuccess + 1;
-                        }
-                        await ExamQuestion.update(
-                            {
-                                // is_right: answer.id
-                                selected_answer: answer.id,
-                            },
-                            { where: { id: item.id } },
-                        );
-                    }
-                });
-            });
-
-            console.log(countSuccess);
+            await Promise.all(
+                exam.ExamQuestionData?.map(async (item: examQuestionDto) => {
+                    await Promise.all(
+                        item.QuestionData.answers.map(async (answer: answerDto) => {
+                            if (listAnswer.includes(answer.id)) {
+                                if (answer.is_right) {
+                                    countSuccess = countSuccess + 1;
+                                }
+                                await ExamQuestion.update(
+                                    {
+                                        // is_right: answer.id
+                                        selected_answer: answer.id,
+                                    },
+                                    { where: { id: item.id } },
+                                );
+                            }
+                        }),
+                    );
+                }),
+            );
 
             await Exam.update(
                 {
                     correct_result_count: countSuccess,
-                    total_result: countSuccess * (10 / exam.dataValues.total_question),
+                    total_result: countSuccess * (10 / exam.total_question),
+                    is_completed: true,
                 },
                 {
                     where: { id: examId },
                 },
             );
 
-            return ResponseHandler(httpStatus.OK, exam, '');
+            let data = {
+                point: countSuccess * (10 / exam.total_question),
+            };
+
+            return ResponseHandler(httpStatus.OK, data, '');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

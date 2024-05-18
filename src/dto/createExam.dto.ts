@@ -34,5 +34,5 @@ export class examDto {
 
     updatedAt: string;
 
-    ExamQuestionData: examQuestionDto;
+    ExamQuestionData: examQuestionDto[];
 }

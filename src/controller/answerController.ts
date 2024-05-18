@@ -81,7 +81,9 @@ class answerController {
     async handleUpdateAnswer(req: Request, res: Response) {
         try {
             const isValid = await validateData(answerDto, req.body, res);
+
             if (!isValid) return;
+
             let data = await answerService.updateAnswerService(req.body);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
