@@ -2,8 +2,10 @@ import httpStatus from 'http-status';
 import { studentDto } from '~/dto/createStudent.dto';
 import { loginDto } from '~/dto/login.dto';
 import { comparePassword, endCodePassword } from '~/helpers/bcrypt';
+import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import { handleCreateToken } from '~/middleware/jwtActions';
 import AllCode from '~/models/AllCode';
+import Parent from '~/models/Parent';
 import Student from '~/models/Student';
 
 import { ResponseHandler } from '~/utils/Response';
@@ -27,8 +29,20 @@ class studentService {
             include: [
                 {
                     model: AllCode,
-                    as: 'address',
+                    as: 'AllCodeData',
                     attributes: ['type', 'title', 'code'],
+                },
+                {
+                    model: Parent,
+                    as: 'ParentData',
+                    attributes: ['id', 'fullName', 'association_for_student'],
+                    include: [
+                        {
+                            model: AllCode,
+                            as: 'AssociationData',
+                            attributes: ['type', 'title', 'code'],
+                        },
+                    ],
                 },
             ],
             raw: true,
@@ -47,7 +61,7 @@ class studentService {
             : isValid;
     }
 
-    // CREATE
+    // REGISTER
 
     async createStudentService(data: studentDto) {
         try {
@@ -58,6 +72,8 @@ class studentService {
             }
 
             const passwordHash = await endCodePassword(data.password);
+
+            console.log(passwordHash);
 
             const student = Student.create({
                 ...data,
@@ -75,39 +91,65 @@ class studentService {
 
     async loginStudentService(data: loginDto) {
         try {
-        } catch (err) {
-            console.log(err);
-            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
-        }
-    }
+            const dataCheck = await this.checkStudentExit(data.email, 'query');
 
-    // GET ALL
+            if (typeof dataCheck !== 'object')
+                return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+            if (!dataCheck.Student) {
+                return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+            }
 
-    async getAllStudentService() {
-        try {
-            return ResponseHandler(httpStatus.OK, null, '');
-        } catch (err) {
-            console.log(err);
-            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
-        }
-    }
+            if (!dataCheck.isValid) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'User not exists');
+            }
 
-    // GET LIMIT
+            const checkPassword = await comparePassword(data.password, dataCheck.Student.password);
 
-    async getStudentService() {
-        try {
-            return ResponseHandler(httpStatus.OK, null, '');
-        } catch (err) {
-            console.log(err);
-            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
-        }
-    }
+            if (!checkPassword) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Wrong password');
+            }
 
-    //DELETE
+            const user = {
+                ...dataCheck.Student,
+            } as any;
 
-    async deleteStudentService() {
-        try {
-            return ResponseHandler(httpStatus.OK, null, '');
+            delete user.password;
+
+            const tokenAccess = handleCreateToken(
+                {
+                    id: dataCheck.Student.id,
+                    email: dataCheck.Student.email,
+                    phoneNumber: dataCheck.Student.phoneNumber,
+                    is_login_social: false,
+                    role: dataCheck.Student.address,
+                    role_detail: 'USER',
+                },
+                '30day',
+            );
+
+            const tokenRefresh = handleCreateToken(
+                {
+                    id: dataCheck.Student.id,
+                    email: dataCheck.Student.email,
+                    phoneNumber: dataCheck.Student.phoneNumber,
+                    is_login_social: false,
+                    role: dataCheck.Student.address,
+                    role_detail: 'USER',
+                },
+                '360day',
+            );
+
+            return ResponseHandler(
+                httpStatus.OK,
+                {
+                    user: user,
+                    tokens: {
+                        access_token: tokenAccess,
+                        refresh_token: tokenRefresh,
+                    },
+                },
+                'User login successfully',
+            );
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
@@ -116,9 +158,31 @@ class studentService {
 
     //UPDATE
 
-    async updateStudentService() {
+    async updateStudentService(data: studentDto) {
         try {
-            return ResponseHandler(httpStatus.OK, null, '');
+            let student = await this.checkStudentExit(data.email, 'query');
+
+            if (typeof student !== 'object')
+                return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+            if (!student.Student) {
+                return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+            }
+
+            if (student.Student.avatar && data.avatar && !handleRemoveFile(student.Student.avatar, 'studentAvatar')) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, "Can't remove avatar old");
+            }
+
+            await Student.update(
+                {
+                    ...data,
+                    password: student.Student.password,
+                },
+                {
+                    where: { email: data.email },
+                },
+            );
+
+            return ResponseHandler(httpStatus.OK, null, 'Update Student Successfully');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

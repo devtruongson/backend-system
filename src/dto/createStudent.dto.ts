@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsString, MinLength } from 'class-validator';
 
 export class studentDto {
     id: number;
@@ -7,15 +7,17 @@ export class studentDto {
     fullName: string;
 
     @IsNotEmpty()
+    @IsNumberString()
+    @MinLength(10)
     phoneNumber: string;
 
     @IsNotEmpty()
     email: string;
 
-    @IsNotEmpty()
+    // @IsNotEmpty()
     gender: boolean;
 
-    @IsNotEmpty()
+    // @IsNotEmpty()
     birthday: string;
 
     @IsNotEmpty()
@@ -25,9 +27,10 @@ export class studentDto {
 
     avatar: string;
 
-    @IsNotEmpty()
+    // @IsNotEmpty()
     level: number;
 
+    @IsNotEmpty()
     address: number;
 
     address_detail: string;

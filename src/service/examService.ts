@@ -254,24 +254,26 @@ class examService {
                 return ResponseHandler(httpStatus.NOT_FOUND, null, ' Exam not exits');
             }
 
-            await exam.dataValues.ExamQuestionData.map((item: examQuestionDto) => {
-                item.QuestionData.answers.map(async (answer: answerDto) => {
-                    if (listAnswer.includes(answer.id)) {
-                        if (answer.is_right) {
-                            countSuccess = countSuccess + 1;
-                        }
-                        await ExamQuestion.update(
-                            {
-                                // is_right: answer.id
-                                selected_answer: answer.id,
-                            },
-                            { where: { id: item.id } },
-                        );
-                    }
-                });
-            });
-
-            console.log(countSuccess);
+            await Promise.all(
+                exam.dataValues.ExamQuestionData.map(async (item: examQuestionDto) => {
+                    await Promise.all(
+                        item.QuestionData.answers.map(async (answer: answerDto) => {
+                            if (listAnswer.includes(answer.id)) {
+                                if (answer.is_right) {
+                                    countSuccess = countSuccess + 1;
+                                }
+                                await ExamQuestion.update(
+                                    {
+                                        // is_right: answer.id
+                                        selected_answer: answer.id,
+                                    },
+                                    { where: { id: item.id } },
+                                );
+                            }
+                        }),
+                    );
+                }),
+            );
 
             await Exam.update(
                 {

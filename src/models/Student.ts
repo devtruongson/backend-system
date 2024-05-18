@@ -56,4 +56,9 @@ Student.belongsTo(AllCode, {
     as: 'AllCodeData',
 });
 
+AllCode.hasMany(Student, {
+    foreignKey: 'address',
+    as: 'StudentData',
+});
+
 export default Student;
