@@ -8,4 +8,8 @@ export class bookCalendarForStudentDto {
     @IsNotEmpty()
     @IsNumber()
     calendar_id: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    teacher_id: number;
 }

@@ -1,9 +1,12 @@
 import httpStatus from 'http-status';
+import { Op } from 'sequelize';
 import { bookCalendarForStudentDto } from '~/dto/bookCalendarForStudent.dto';
 import { bookingCalendarDto } from '~/dto/bookingCalendar.dto';
 import { createCalendarDto } from '~/dto/createCalendar.dto';
+import AllCode from '~/models/AllCode';
 import Calendar from '~/models/Calendar';
 import CalendarTeacher from '~/models/CalendarTeacher';
+import Course from '~/models/Course';
 import Student from '~/models/Student';
 import StudentCourse from '~/models/StudentCourse';
 import User from '~/models/User';
@@ -109,6 +112,87 @@ class calendarService {
                     },
                     {
                         model: StudentCourse,
+                        include: [
+                            {
+                                model: Course,
+                                as: 'CourseData',
+                                attributes: {
+                                    exclude: ['createdAt', 'updatedAt'],
+                                },
+                                include: [
+                                    {
+                                        model: AllCode,
+                                        as: 'TrainingSectorData',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            });
+            return ResponseHandler(httpStatus.OK, data, 'ok');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getCalendarForStudent(email: string) {
+        try {
+            const checkUserExit: any = await Student.findOne({
+                where: { email: email },
+            });
+
+            if (!checkUserExit) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'student not found');
+            }
+
+            const data = await CalendarTeacher.findAll({
+                where: {
+                    student_id: checkUserExit.id,
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+                include: [
+                    {
+                        model: Calendar,
+                        as: 'calendarTeacherData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt'],
+                        },
+                    },
+                    {
+                        model: User,
+                        as: 'teacherData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt', 'password'],
+                        },
+                    },
+                    {
+                        model: Student,
+                        as: 'studentData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt', 'password'],
+                        },
+                    },
+                    {
+                        model: StudentCourse,
+                        include: [
+                            {
+                                model: Course,
+                                as: 'CourseData',
+                                attributes: {
+                                    exclude: ['createdAt', 'updatedAt'],
+                                },
+                                include: [
+                                    {
+                                        model: AllCode,
+                                        as: 'TrainingSectorData',
+                                    },
+                                ],
+                            },
+                        ],
                     },
                 ],
             });
@@ -124,7 +208,10 @@ class calendarService {
             const checkExitCalendar = await CalendarTeacher.findOne({
                 where: {
                     id: data.calendar_id,
-                    student_id: null,
+                    student_id: {
+                        [Op.ne]: null,
+                    },
+                    teacher_id: data.teacher_id,
                 },
             });
 
@@ -139,6 +226,7 @@ class calendarService {
                 {
                     where: {
                         id: data.calendar_id,
+                        teacher_id: data.teacher_id,
                     },
                 },
             );

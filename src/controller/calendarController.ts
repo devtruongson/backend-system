@@ -57,8 +57,17 @@ class calendarController {
             const isValid = await validateData(bookCalendarForStudentDto, req.body, res);
             if (!isValid) return;
             const data = await calendarService.bookCalendarForStudent(req.body);
-            console.log('check lot');
-            return res.status(httpStatus.OK).json({});
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
+    async getCalendarForStudent(req: Request, res: Response) {
+        try {
+            const data = await calendarService.getCalendarForStudent(req.body.token_author);
+            return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
             return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
