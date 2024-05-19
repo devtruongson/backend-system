@@ -1,6 +1,6 @@
 import express, { Express } from 'express';
 import courseController from '~/controller/courseController';
-import { handleCheckTokenAdmin } from '~/middleware/jwtActions';
+import { handleCheckTokenAdmin, handleCheckTokenUser } from '~/middleware/jwtActions';
 import { uploadThumbnailCourse } from '~/middleware/multer';
 
 const router = express.Router();
@@ -21,8 +21,14 @@ const initApiCourse = (app: Express) => {
 
     router.get(
         '/get',
-        // handleCheckTokenAdmin ,
+        // handleCheckTokenUser,
         courseController.handleGetCourse,
+    );
+
+    router.get(
+        '/student',
+        // handleCheckTokenUser,
+        courseController.handleGetCourseByTrainingId,
     );
 
     router.put('/update', handleCheckTokenAdmin, courseController.handleUpdateCourse);

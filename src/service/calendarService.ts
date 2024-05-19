@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 import { bookCalendarForStudentDto } from '~/dto/bookCalendarForStudent.dto';
 import { bookingCalendarDto } from '~/dto/bookingCalendar.dto';
 import { createCalendarDto } from '~/dto/createCalendar.dto';
+import { studentBookingDto } from '~/dto/studentBooking';
 import AllCode from '~/models/AllCode';
 import Calendar from '~/models/Calendar';
 import CalendarTeacher from '~/models/CalendarTeacher';
@@ -243,6 +244,27 @@ class calendarService {
                 },
             );
 
+            return ResponseHandler(httpStatus.OK, null, 'ok');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async studentBooking(data: studentBookingDto) {
+        try {
+            let checkIsValid = await StudentCourse.findOne({
+                where: { student_id: data.student_id, course_id: data.course_id },
+            });
+
+            if (checkIsValid) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Khóa học đã được mua');
+            }
+            await StudentCourse.create({
+                ...data,
+                calendar_id: null,
+                is_confirm: true,
+            });
             return ResponseHandler(httpStatus.OK, null, 'ok');
         } catch (error) {
             console.log(error);

@@ -8,7 +8,7 @@ export const sequelize = new Sequelize('system_manage', 'sa', '123456', {
         collate: 'utf8_general_ci',
         timestamps: true,
     },
-    logging: true,
+    logging: false,
 });
 
 export default async function connectDB() {

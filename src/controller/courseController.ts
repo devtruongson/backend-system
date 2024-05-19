@@ -83,7 +83,22 @@ class CourseController {
             if (!isValid) return;
 
             const data = await courseService.updateCourService(req.body);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
 
+    async handleGetCourseByTrainingId(req: Request, res: Response) {
+        try {
+            let trainingId: number = parseInt(req.query.trainingId as string);
+            let page: number = parseInt(req.query.page as string);
+            let pageSize: number = parseInt(req.query.pageSize as string);
+
+            const data = await courseService.getCourseByTrainingId(trainingId, page, pageSize);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
