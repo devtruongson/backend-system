@@ -132,6 +132,46 @@ class CourserService {
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }
+
+    async getCourseByTrainingId(trainingId: number, page: number, pageSize: number) {
+        try {
+            if (!trainingId) {
+                return ResponseHandler(httpStatus.OK, null, 'Please send training Id !');
+            }
+
+            let resData;
+            if (!page || !pageSize) {
+                resData = await Course.findAll({
+                    where: {
+                        training_sector: trainingId,
+                    },
+                });
+            }
+
+            let offset: number = (page - 1) * pageSize;
+            let { count, rows } = await Course.findAndCountAll({
+                where: {
+                    training_sector: trainingId,
+                },
+                // include: [{ model: AllCode, as: 'TrainingSectorData' }],
+                offset: offset,
+                limit: pageSize,
+            });
+
+            resData = {
+                items: rows,
+                meta: {
+                    currentPage: page,
+                    totalIteams: count,
+                    totalPages: Math.ceil(count / pageSize),
+                },
+            };
+            return ResponseHandler(httpStatus.OK, resData, 'update course successfully');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
 }
 
 export default new CourserService();
