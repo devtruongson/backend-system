@@ -166,7 +166,7 @@ class CourserService {
                     totalPages: Math.ceil(count / pageSize),
                 },
             };
-            return ResponseHandler(httpStatus.OK, resData, 'update course successfully');
+            return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
