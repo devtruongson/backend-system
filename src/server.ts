@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import compression from 'compression';
 import connectDB from './configs/connectDB';
 import initApiRoutes from './routes/api';
