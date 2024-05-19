@@ -1,10 +1,13 @@
-import express, { Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import compression from 'compression';
 import connectDB from './configs/connectDB';
 import initApiRoutes from './routes/api';
 import bodyParser from 'body-parser';
+import configCors from './configs/configCors';
 
 const app = express();
+configCors(app);
+
 app.use(compression());
 
 app.use(bodyParser.json({ limit: '50mb' }));
