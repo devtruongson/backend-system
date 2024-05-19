@@ -94,15 +94,12 @@ class CourseController {
 
     async handleGetCourseByTrainingId(req: Request, res: Response) {
         try {
-            // let trainingId: number = parseInt(req.query.trainingId as string);
-            // let page: number = parseInt(req.query.page as string);
-            // let pageSize: number = parseInt(req.query.pageSize as string);
+            let trainingId: number = parseInt(req.query.trainingId as string);
+            let page: number = parseInt(req.query.page as string);
+            let pageSize: number = parseInt(req.query.pageSize as string);
 
-            // const data = await courseService.getCourseByTrainingId(trainingId, page, pageSize);
-            // return res.status(httpStatus.OK).json(data);
-            res.json({
-                msg: 'okj',
-            });
+            const data = await courseService.getCourseByTrainingId(trainingId, page, pageSize);
+            return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
             return res
