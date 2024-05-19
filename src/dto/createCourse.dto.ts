@@ -24,7 +24,7 @@ export class createCourseDto {
     price: string;
 
     // @IsString()
-    @IsNotEmpty()
+    // @IsNotEmpty()
     thumbnail: string;
 
     // @IsNumber()
