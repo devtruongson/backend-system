@@ -30,7 +30,7 @@ class studentService {
                 {
                     model: AllCode,
                     as: 'AllCodeData',
-                    attributes: ['type', 'title', 'code'],
+                    attributes: ['id', 'type', 'title', 'code'],
                 },
                 {
                     model: Parent,
@@ -68,7 +68,7 @@ class studentService {
             let checkExit = await this.checkStudentExit(data.email);
 
             if (checkExit) {
-                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'User already exists');
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Student already exists');
             }
 
             const passwordHash = await endCodePassword(data.password);
@@ -80,7 +80,7 @@ class studentService {
                 password: passwordHash,
             });
 
-            return ResponseHandler(httpStatus.OK, student, 'Create Student Successfully');
+            return ResponseHandler(httpStatus.OK, student, 'Register Student Successfully');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
@@ -183,6 +183,23 @@ class studentService {
             );
 
             return ResponseHandler(httpStatus.OK, null, 'Update Student Successfully');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getInfoStudentService(email: string) {
+        try {
+            let student = await this.checkStudentExit(email, 'query');
+
+            if (typeof student !== 'object')
+                return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+            if (!student.Student) {
+                return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, "Student doesn't exits !"));
+            }
+
+            return ResponseHandler(httpStatus.OK, student.Student, 'Info Student ');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

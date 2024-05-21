@@ -265,7 +265,7 @@ class calendarService {
                 calendar_id: null,
                 is_confirm: true,
             });
-            return ResponseHandler(httpStatus.OK, null, 'ok');
+            return ResponseHandler(httpStatus.OK, null, 'Mua khóa hoc thành công');
         } catch (error) {
             console.log(error);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

@@ -9,7 +9,7 @@ const initApiCourse = (app: Express) => {
     router.post(
         '/create',
         // handleCheckTokenAdmin,
-        uploadThumbnailCourse.single('thumbnail'),
+        // uploadThumbnailCourse.single('thumbnail'),
         courseController.handleCreateCoure,
     );
 
