@@ -3,7 +3,11 @@ import { createCourseDto } from '~/dto/createCourse.dto';
 import { queryGetData } from '~/dto/queryGetData.dto';
 import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import AllCode from '~/models/AllCode';
+import Calendar from '~/models/Calendar';
+import CalendarTeacher from '~/models/CalendarTeacher';
 import Course from '~/models/Course';
+import StudentCourse from '~/models/StudentCourse';
+import User from '~/models/User';
 import { ResponseHandler } from '~/utils/Response';
 
 class CourserService {
@@ -136,7 +140,7 @@ class CourserService {
     async getCourseByTrainingId(trainingId: number, page: number, pageSize: number) {
         try {
             if (!trainingId) {
-                return ResponseHandler(httpStatus.OK, null, 'Please send training Id !');
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Please send training Id !');
             }
 
             let resData;
@@ -166,7 +170,79 @@ class CourserService {
                     totalPages: Math.ceil(count / pageSize),
                 },
             };
-            return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            return ResponseHandler(httpStatus.OK, resData, ' courses');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getCourseBystudentService(studentId: number, page: number, pageSize: number) {
+        try {
+            if (!studentId || !page || !pageSize) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Vui lòng gửi đủ thông tin !');
+            }
+
+            // let resData;
+            // if (!page || !pageSize) {
+            //     resData = await StudentCourse.findAll({
+            //         where: {
+            //             student_id: studentId,
+            //         },
+            //         include: [
+            //             {
+            //                 model: Course,
+            //                 as: 'CourseData',
+            //             },
+            //             {
+            //                 model: CalendarTeacher,
+            //                 as: 'CalendarTeacherData',
+
+            //             },
+            //         ],
+            //     });
+            // }
+
+            let offset: number = (page - 1) * pageSize;
+            let { count, rows } = await StudentCourse.findAndCountAll({
+                where: {
+                    student_id: studentId,
+                },
+                include: [
+                    {
+                        model: Course,
+                        as: 'CourseData',
+                        include: [{ model: AllCode, as: 'TrainingSectorData' }],
+                    },
+                    {
+                        model: CalendarTeacher,
+                        as: 'CalendarTeacherData',
+                        include: [
+                            {
+                                model: Calendar,
+                                as: 'calendarData',
+                            },
+                            {
+                                model: User,
+                                as: 'teacherData',
+                                include: [{ model: AllCode, as: 'addressData' }],
+                            },
+                        ],
+                    },
+                ],
+                offset: offset,
+                limit: pageSize,
+            });
+
+            let resData = {
+                items: rows,
+                meta: {
+                    currentPage: page,
+                    totalIteams: count,
+                    totalPages: Math.ceil(count / pageSize),
+                },
+            };
+            return ResponseHandler(httpStatus.OK, resData, ' courses');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

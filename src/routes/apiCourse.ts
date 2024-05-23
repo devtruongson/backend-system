@@ -31,6 +31,8 @@ const initApiCourse = (app: Express) => {
         courseController.handleGetCourseByTrainingId,
     );
 
+    router.get('/student-course', handleCheckTokenUser, courseController.handleGetCourseByStudent);
+
     router.put('/update', handleCheckTokenAdmin, courseController.handleUpdateCourse);
 
     return app.use('/v1/course', router);

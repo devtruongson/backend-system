@@ -57,10 +57,12 @@ Course.hasMany(StudentCourse, {
 
 StudentCourse.belongsTo(CalendarTeacher, {
     foreignKey: 'calendar_id',
+    as: 'CalendarTeacherData',
 });
 
 CalendarTeacher.hasOne(StudentCourse, {
     foreignKey: 'calendar_id',
+    as: 'StudentCourseData',
 });
 
 export default StudentCourse;

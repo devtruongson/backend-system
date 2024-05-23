@@ -1,5 +1,5 @@
 import express, { Express } from 'express';
-import { handleCheckTokenTeacher } from '~/middleware/jwtActions';
+import { handleCheckTokenTeacher, handleCheckTokenUser } from '~/middleware/jwtActions';
 import examController from '~/controller/examController';
 
 const router = express.Router();
@@ -11,13 +11,15 @@ const initApiExam = (app: Express) => {
         examController.handleCreateExam,
     );
 
-    router.get('/student', examController.handleGetExam);
+    router.get('/student', handleCheckTokenUser, examController.handleGetExam);
 
     router.get(
         '/teacher',
         // handleCheckTokenTeacher,
         examController.handleGetExam,
     );
+
+    router.get('/get-one', handleCheckTokenUser, examController.handleGetOneExam);
 
     router.delete(
         '/:id',
@@ -31,7 +33,7 @@ const initApiExam = (app: Express) => {
         examController.handleUpdateInfoExam,
     );
 
-    router.put('/score', examController.handleUpdateScoreExam);
+    router.put('/score', handleCheckTokenUser, examController.handleUpdateScoreExam);
 
     return app.use('/v1/exam', router);
 };
