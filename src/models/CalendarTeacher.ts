@@ -3,6 +3,7 @@ import { sequelize } from '../configs/connectDB';
 import Calendar from './Calendar';
 import User from './User';
 import Student from './Student';
+import StudentCourse from './StudentCourse';
 
 class CalendarTeacher extends Model {}
 
@@ -59,7 +60,7 @@ CalendarTeacher.init(
 CalendarTeacher.belongsTo(Calendar, {
     foreignKey: 'calendar_id',
     targetKey: 'id',
-    as: 'calendarTeacherData',
+    as: 'calendarData',
 });
 CalendarTeacher.belongsTo(User, {
     foreignKey: 'teacher_id',

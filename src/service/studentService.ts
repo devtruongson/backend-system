@@ -28,11 +28,6 @@ class studentService {
             },
             include: [
                 {
-                    model: AllCode,
-                    as: 'AllCodeData',
-                    attributes: ['type', 'title', 'code'],
-                },
-                {
                     model: Parent,
                     as: 'ParentData',
                     attributes: ['id', 'fullName', 'association_for_student'],
@@ -68,19 +63,23 @@ class studentService {
             let checkExit = await this.checkStudentExit(data.email);
 
             if (checkExit) {
-                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'User already exists');
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Student already exists');
             }
 
             const passwordHash = await endCodePassword(data.password);
 
-            console.log(passwordHash);
-
-            const student = Student.create({
+            await Student.create({
                 ...data,
                 password: passwordHash,
             });
 
-            return ResponseHandler(httpStatus.OK, student, 'Create Student Successfully');
+            const student = await Student.findOne({
+                where: {
+                    email: data.email,
+                },
+            });
+
+            return ResponseHandler(httpStatus.OK, student, 'Register Student Successfully');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
@@ -121,7 +120,7 @@ class studentService {
                     email: dataCheck.Student.email,
                     phoneNumber: dataCheck.Student.phoneNumber,
                     is_login_social: false,
-                    role: dataCheck.Student.address,
+                    role: 1,
                     role_detail: 'USER',
                 },
                 '30day',
@@ -133,7 +132,7 @@ class studentService {
                     email: dataCheck.Student.email,
                     phoneNumber: dataCheck.Student.phoneNumber,
                     is_login_social: false,
-                    role: dataCheck.Student.address,
+                    role: 1,
                     role_detail: 'USER',
                 },
                 '360day',
@@ -220,6 +219,22 @@ class studentService {
             return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    async getInfoStudentService(email: string) {
+        try {
+            let student = await this.checkStudentExit(email, 'query');
+
+            if (typeof student !== 'object')
+                return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+            if (!student.Student) {
+                return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, "Student doesn't exits !"));
+            }
+
+            return ResponseHandler(httpStatus.OK, student.Student, 'Info Student ');
+        } catch (err) {
+            console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }

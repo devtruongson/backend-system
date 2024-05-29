@@ -59,6 +59,20 @@ class studentController {
     }
 
     // Get All Students
+    async handleGetInfoStudent(req: Request, res: Response) {
+        try {
+            let email: string = req.params.email;
+
+            let data = await studentService.getInfoStudentService(email);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
+
     async handleGetAllStudent(req: Request, res: Response) {
         try {
             let data = await studentService.handleGetAllStudent(req.query.page as any, req.query.limit as any);

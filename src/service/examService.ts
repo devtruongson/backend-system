@@ -9,7 +9,11 @@ import Question from '~/models/Question';
 import { ResponseHandler } from '~/utils/Response';
 
 class examService {
-    async handleGetOneExam(id: number): Promise<examDto | null> {
+    async handleGetOneExam(id: number, isCompleted: boolean = false): Promise<examDto | null> {
+        let excludeAnswer = ['createdAt', 'updatedAt'];
+        if (!isCompleted) {
+            excludeAnswer.push('is_right');
+        }
         let exam = (await Exam.findOne({
             where: { id: id },
             include: [
@@ -32,7 +36,7 @@ class examService {
                                     model: Answer,
                                     as: 'answers',
                                     attributes: {
-                                        exclude: ['createdAt', 'updatedAt'],
+                                        exclude: [...excludeAnswer],
                                     },
                                 },
                             ],
@@ -40,6 +44,7 @@ class examService {
                     ],
                 },
             ],
+            nest: true,
         })) as examDto | null;
 
         return exam;
@@ -64,9 +69,17 @@ class examService {
 
     // GET
 
-    async getExamService(id: number, page: number | undefined, pageSize: number | undefined, type: string) {
+    async getExamService(
+        id: number,
+        page: number | undefined,
+        pageSize: number | undefined,
+        type: string,
+        isComplated: boolean,
+    ) {
         try {
-            let query: any = {};
+            let query: any = {
+                is_completed: isComplated,
+            };
 
             if (type === 'student') {
                 query.student_id = id;
@@ -108,35 +121,70 @@ class examService {
 
             let offset: number = (page - 1) * pageSize;
 
-            let { count, rows } = await Exam.findAndCountAll({
-                where: { ...query },
-                include: [
-                    {
-                        model: ExamQuestion,
-                        as: 'ExamQuestionData',
-                        attributes: {
-                            exclude: ['createdAt', 'updatedAt'],
-                        },
-                        include: [
-                            {
-                                model: Question,
-                                as: 'QuestionData',
-                                attributes: {
-                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
-                                },
-                                include: [
-                                    {
-                                        model: Answer,
-                                        as: 'answers',
-                                    },
-                                ],
+            const [count, rows] = await Promise.all([
+                await Exam.count({
+                    where: { ...query },
+                }),
+                await Exam.findAll({
+                    where: { ...query },
+                    include: [
+                        {
+                            model: ExamQuestion,
+                            as: 'ExamQuestionData',
+                            attributes: {
+                                exclude: ['createdAt', 'updatedAt'],
                             },
-                        ],
-                    },
-                ],
-                offset: offset,
-                limit: pageSize,
-            });
+                            include: [
+                                {
+                                    model: Question,
+                                    as: 'QuestionData',
+                                    attributes: {
+                                        exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                    },
+                                    include: [
+                                        {
+                                            model: Answer,
+                                            as: 'answers',
+                                        },
+                                    ],
+                                },
+                            ],
+                        },
+                    ],
+                    offset: offset,
+                    limit: pageSize,
+                }),
+            ]);
+
+            // let { count, rows } = await Exam.findAndCountAll({
+            //     where: { ...query },
+            //     include: [
+            //         {
+            //             model: ExamQuestion,
+            //             as: 'ExamQuestionData',
+            //             attributes: {
+            //                 exclude: ['createdAt', 'updatedAt'],
+            //             },
+            //             include: [
+            //                 {
+            //                     model: Question,
+            //                     as: 'QuestionData',
+            //                     attributes: {
+            //                         exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+            //                     },
+            //                     include: [
+            //                         {
+            //                             model: Answer,
+            //                             as: 'answers',
+            //                         },
+            //                     ],
+            //                 },
+            //             ],
+            //         },
+            //     ],
+            //     offset: offset,
+            //     limit: pageSize,
+            // });
 
             let resData = {
                 items: rows,
@@ -190,7 +238,7 @@ class examService {
         try {
             let countSuccess = 0;
 
-            let exam = await this.handleGetOneExam(examId);
+            let exam = await this.handleGetOneExam(examId, true);
 
             if (!exam) {
                 return ResponseHandler(httpStatus.NOT_FOUND, null, ' Exam not exits');
@@ -233,6 +281,21 @@ class examService {
             };
 
             return ResponseHandler(httpStatus.OK, data, '');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getOneExamService(id: number, isCompleted: boolean) {
+        try {
+            if (!id) {
+                return ResponseHandler(httpStatus.NOT_FOUND, null, ' Exam id không được trống !');
+            }
+
+            let exam = await this.handleGetOneExam(id, isCompleted);
+
+            return ResponseHandler(httpStatus.OK, exam, '');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

@@ -107,6 +107,21 @@ class CourseController {
                 .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
         }
     }
+
+    async handleGetCourseByStudent(req: Request, res: Response) {
+        try {
+            let page: number = parseInt(req.query.page as string);
+            let pageSize: number = parseInt(req.query.pageSize as string);
+            let studentId: number = parseInt(req.query.studentId as string);
+            const data = await courseService.getCourseBystudentService(studentId, page, pageSize);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
 }
 
 const courseController = new CourseController();

@@ -9,7 +9,7 @@ const initApiCourse = (app: Express) => {
     router.post(
         '/create',
         // handleCheckTokenAdmin,
-        uploadThumbnailCourse.single('thumbnail'),
+        // uploadThumbnailCourse.single('thumbnail'),
         courseController.handleCreateCoure,
     );
 
@@ -30,6 +30,8 @@ const initApiCourse = (app: Express) => {
         // handleCheckTokenUser,
         courseController.handleGetCourseByTrainingId,
     );
+
+    router.get('/student-course', handleCheckTokenUser, courseController.handleGetCourseByStudent);
 
     router.put('/update', handleCheckTokenAdmin, courseController.handleUpdateCourse);
 
