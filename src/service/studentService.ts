@@ -188,6 +188,41 @@ class studentService {
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }
+
+    async handleGetAllStudent(page: number = 1, pageSize: number = 10) {
+        try {
+            let resData;
+            if (!page || !pageSize) {
+                resData = await Student.findAll({
+                    attributes: {
+                        exclude: ['password'],
+                    },
+                });
+            }
+
+            let offset: number = (page - 1) * pageSize;
+            let { count, rows } = await Student.findAndCountAll({
+                attributes: {
+                    exclude: ['password'],
+                },
+                offset: +offset,
+                limit: +pageSize,
+            });
+
+            resData = {
+                items: rows,
+                meta: {
+                    currentPage: page,
+                    totalIteams: count,
+                    totalPages: Math.ceil(count / pageSize),
+                },
+            };
+            return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
 }
 
 export default new studentService();

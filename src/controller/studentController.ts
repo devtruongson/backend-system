@@ -57,6 +57,19 @@ class studentController {
                 .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
         }
     }
+
+    // Get All Students
+    async handleGetAllStudent(req: Request, res: Response) {
+        try {
+            let data = await studentService.handleGetAllStudent(req.query.page as any, req.query.limit as any);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
 }
 
 export default new studentController();

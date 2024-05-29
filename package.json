@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "npx nodemon",
+    "dev": "nodemon",
     "build": "rimraf ./dist && tsc && tsc-alias",
     "start": "node dist/server.js",
     "cli:migradb": "npx ts-node src/configs/migration.ts",

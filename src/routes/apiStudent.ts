@@ -9,6 +9,7 @@ const initApiStudent = (app: Express) => {
     router.post('/login', studentController.handleLoginStudent);
 
     router.put('/', studentController.handleUpdateStudent);
+    router.get('/', studentController.handleGetAllStudent);
 
     return app.use('/v1/student', router);
 };
