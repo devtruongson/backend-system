@@ -24,6 +24,7 @@ const initCalenderRouter = (app: Express) => {
     router.get('/student', handleCheckTokenUser, calendarController.getCalendarForStudent);
     router.post('/student-booking', handleCheckTokenUser, calendarController.handleStudentCreateBooking);
     router.post('/book-for-student', handleCheckTokenAdmin, calendarController.bookCalendarForStudent);
+    router.delete('/unbooking', calendarController.handleUnBooking);
 
     return app.use('/v1/calendar', router);
 };

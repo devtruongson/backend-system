@@ -9,7 +9,6 @@ class parentService {
 
     async createParentService(data: parentDto) {
         try {
-            console.log(data);
             await Parent.create({
                 ...data,
             });

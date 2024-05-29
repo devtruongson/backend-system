@@ -78,7 +78,9 @@ class calendarService {
             const query: any = {};
 
             if (filterDay) {
-                query.day = filterDay;
+                query.day = {
+                    [Op.gte]: filterDay,
+                };
             }
 
             const data = await CalendarTeacher.findAll({
@@ -266,6 +268,19 @@ class calendarService {
                 calendar_id: null,
                 is_confirm: true,
             });
+            return ResponseHandler(httpStatus.OK, null, 'Mua khóa hoc thành công');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async unbookingService(timeStart: string) {
+        try {
+            await CalendarTeacher.destroy({
+                where: { time_stamp_start: timeStart },
+            });
+
             return ResponseHandler(httpStatus.OK, null, 'Mua khóa hoc thành công');
         } catch (error) {
             console.log(error);

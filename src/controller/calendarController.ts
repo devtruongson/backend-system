@@ -86,6 +86,16 @@ class calendarController {
             return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
         }
     }
+
+    async handleUnBooking(req: Request, res: Response) {
+        try {
+            let data = await calendarService.unbookingService(req.query.timeStart as string);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
 }
 
 export default new calendarController();
