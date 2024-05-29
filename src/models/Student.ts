@@ -37,8 +37,14 @@ Student.init(
         level: {
             type: DataTypes.INTEGER,
         },
-        address: {
-            type: DataTypes.INTEGER,
+        province: {
+            type: DataTypes.STRING,
+        },
+        district: {
+            type: DataTypes.STRING,
+        },
+        commune: {
+            type: DataTypes.STRING,
         },
         address_detail: {
             type: DataTypes.STRING,
@@ -50,15 +56,15 @@ Student.init(
     },
 );
 
-Student.belongsTo(AllCode, {
-    foreignKey: 'address',
-    targetKey: 'id',
-    as: 'AllCodeData',
-});
+// Student.belongsTo(AllCode, {
+//     foreignKey: 'address',
+//     targetKey: 'id',
+//     as: 'AllCodeData',
+// });
 
-AllCode.hasMany(Student, {
-    foreignKey: 'address',
-    as: 'StudentData',
-});
+// AllCode.hasMany(Student, {
+//     foreignKey: 'address',
+//     as: 'StudentData',
+// });
 
 export default Student;

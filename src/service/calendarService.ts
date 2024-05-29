@@ -92,7 +92,7 @@ class calendarService {
                 include: [
                     {
                         model: Calendar,
-                        as: 'calendarTeacherData',
+                        as: 'calendarData',
                         attributes: {
                             exclude: ['createdAt', 'updatedAt'],
                         },
@@ -113,6 +113,7 @@ class calendarService {
                     },
                     {
                         model: StudentCourse,
+                        as: 'StudentCourseData',
                         include: [
                             {
                                 model: Course,
@@ -159,7 +160,7 @@ class calendarService {
                 include: [
                     {
                         model: Student,
-                        as: 'StudentData',
+                        as: 'studentData',
                         attributes: {
                             exclude: ['password', 'createdAt', 'updatedAt'],
                         },
@@ -182,7 +183,7 @@ class calendarService {
                         include: [
                             {
                                 model: Calendar,
-                                as: 'calendarTeacherData',
+                                as: 'calendarData',
                                 attributes: {
                                     exclude: ['createdAt', 'updatedAt'],
                                 },

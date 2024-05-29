@@ -31,7 +31,13 @@ export class studentDto {
     level: number;
 
     @IsNotEmpty()
-    address: number;
+    province: string;
+
+    @IsNotEmpty()
+    district: string;
+
+    @IsNotEmpty()
+    commune: string;
 
     address_detail: string;
 }

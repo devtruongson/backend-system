@@ -28,11 +28,6 @@ class studentService {
             },
             include: [
                 {
-                    model: AllCode,
-                    as: 'AllCodeData',
-                    attributes: ['id', 'type', 'title', 'code'],
-                },
-                {
                     model: Parent,
                     as: 'ParentData',
                     attributes: ['id', 'fullName', 'association_for_student'],
@@ -73,11 +68,15 @@ class studentService {
 
             const passwordHash = await endCodePassword(data.password);
 
-            console.log(passwordHash);
-
-            const student = Student.create({
+            await Student.create({
                 ...data,
                 password: passwordHash,
+            });
+
+            const student = await Student.findOne({
+                where: {
+                    email: data.email,
+                },
             });
 
             return ResponseHandler(httpStatus.OK, student, 'Register Student Successfully');
@@ -121,7 +120,7 @@ class studentService {
                     email: dataCheck.Student.email,
                     phoneNumber: dataCheck.Student.phoneNumber,
                     is_login_social: false,
-                    role: dataCheck.Student.address,
+                    role: 1,
                     role_detail: 'USER',
                 },
                 '30day',
@@ -133,7 +132,7 @@ class studentService {
                     email: dataCheck.Student.email,
                     phoneNumber: dataCheck.Student.phoneNumber,
                     is_login_social: false,
-                    role: dataCheck.Student.address,
+                    role: 1,
                     role_detail: 'USER',
                 },
                 '360day',
