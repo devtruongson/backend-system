@@ -56,10 +56,14 @@ class examService {
         try {
             await Exam.create({
                 ...data,
-                is_completed: false,
                 correct_result_count: 0,
                 total_result: 0,
+                is_completed: false,
+                is_booked: true,
+                is_testing: false,
+                is_tested: false,
             });
+
             return ResponseHandler(httpStatus.OK, null, 'Create Exam Successfully');
         } catch (err) {
             console.log(err);
@@ -270,6 +274,7 @@ class examService {
                     correct_result_count: countSuccess,
                     total_result: countSuccess * (10 / exam.total_question),
                     is_completed: true,
+                    is_tested: true,
                 },
                 {
                     where: { id: examId },

@@ -66,8 +66,6 @@ class examQuestionService {
         try {
             let listQuestion = (await this.handleGetRandomQuestion(authorId, level, totalQuestion)) as { id: number }[];
 
-            console.log(listQuestion);
-
             await ExamQuestion.bulkCreate(
                 listQuestion.map((item) => {
                     return {

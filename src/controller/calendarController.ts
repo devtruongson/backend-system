@@ -96,6 +96,21 @@ class calendarController {
             return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
         }
     }
+
+    async handleGetCalendarToBookExam(req: Request, res: Response) {
+        try {
+            const page: number = parseInt(req.query.page as string);
+            const pageSize: number = parseInt(req.query.pageSize as string);
+            const idTeacher: number = parseInt(req.query.idTeacher as string);
+            console.log(idTeacher);
+
+            let data = await calendarService.getToBookExamService(page, pageSize, idTeacher);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
 }
 
 export default new calendarController();

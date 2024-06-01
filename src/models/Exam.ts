@@ -44,6 +44,15 @@ Exam.init(
         is_completed: {
             type: DataTypes.BOOLEAN,
         },
+        is_booked: {
+            type: DataTypes.BOOLEAN,
+        },
+        is_testing: {
+            type: DataTypes.BOOLEAN,
+        },
+        is_tested: {
+            type: DataTypes.BOOLEAN,
+        },
     },
     {
         sequelize,
