@@ -1,4 +1,5 @@
 import httpStatus from 'http-status';
+import { NIL } from 'uuid';
 import { questionDto } from '~/dto/createQuestion.dto';
 import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import AllCode from '~/models/AllCode';
@@ -55,11 +56,19 @@ class questionService {
 
     // GET LIMIT
 
-    async getQuestionService(page: number, pageSize: number, authorId: number) {
+    async getQuestionService(page: number, pageSize: number, authorId: number, level: number = 0) {
         try {
+            let query: any = {
+                author_id: authorId,
+            };
+
+            if (level) {
+                query.level = level;
+            }
+
             let offset: number = (page - 1) * pageSize;
             let { count, rows } = await Question.findAndCountAll({
-                where: { author_id: authorId },
+                where: { ...query },
                 include: [
                     {
                         model: AllCode,

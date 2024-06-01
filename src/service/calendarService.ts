@@ -8,6 +8,7 @@ import AllCode from '~/models/AllCode';
 import Calendar from '~/models/Calendar';
 import CalendarTeacher from '~/models/CalendarTeacher';
 import Course from '~/models/Course';
+import Exam from '~/models/Exam';
 import Student from '~/models/Student';
 import StudentCourse from '~/models/StudentCourse';
 import User from '~/models/User';
@@ -78,7 +79,9 @@ class calendarService {
             const query: any = {};
 
             if (filterDay) {
-                query.day = filterDay;
+                query.day = {
+                    [Op.gte]: filterDay,
+                };
             }
 
             const data = await CalendarTeacher.findAll({
@@ -267,6 +270,77 @@ class calendarService {
                 is_confirm: true,
             });
             return ResponseHandler(httpStatus.OK, null, 'Mua khóa hoc thành công');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async unbookingService(timeStart: string) {
+        try {
+            await CalendarTeacher.destroy({
+                where: { time_stamp_start: timeStart },
+            });
+
+            return ResponseHandler(httpStatus.OK, null, 'Mua khóa hoc thành công');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getToBookExamService(page: number, pageSize: number, idTeacher: number) {
+        try {
+            if (!page || !pageSize || !idTeacher) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Cần nhập đủ các trường');
+            }
+
+            let offset: number = (page - 1) * pageSize;
+            let { count, rows } = await CalendarTeacher.findAndCountAll({
+                where: {
+                    teacher_id: idTeacher,
+                    student_id: {
+                        [Op.not]: null,
+                    },
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+                include: [
+                    {
+                        model: Student,
+                        as: 'studentData',
+                        attributes: {
+                            exclude: ['password', 'createdAt', 'updatedAt'],
+                        },
+                        include: [
+                            {
+                                model: Exam,
+                                as: 'examData',
+                            },
+                        ],
+                    },
+                    {
+                        model: User,
+                        as: 'teacherData',
+                        attributes: {
+                            exclude: ['password', 'createdAt', 'updatedAt'],
+                        },
+                    },
+                ],
+                offset: +offset,
+                limit: +pageSize,
+            });
+
+            let data = {
+                items: rows,
+                meta: {
+                    currentPage: page,
+                    totalIteams: count,
+                    totalPages: Math.ceil(count / pageSize),
+                },
+            };
+            return ResponseHandler(httpStatus.OK, data, 'Calendar teacher');
         } catch (error) {
             console.log(error);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
