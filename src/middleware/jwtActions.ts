@@ -85,7 +85,8 @@ export const handleCheckTokenUserInSystem = (req: Request, res: Response, next: 
         if (
             decode.role_detail === role.ADMIN ||
             decode.role_detail === role.SALE ||
-            decode.role_detail === role.TEACHER
+            decode.role_detail === role.TEACHER ||
+            decode.role_detail === role.USER
         ) {
             next();
         } else {
