@@ -104,8 +104,9 @@ class calendarController {
             const page: number = parseInt(req.query.page as string);
             const pageSize: number = parseInt(req.query.pageSize as string);
             const idTeacher: number = parseInt(req.query.idTeacher as string);
+            const isNotStudent: string = req.query.isNotStudent as string;
 
-            let data = await calendarService.getToBookExamService(page, pageSize, idTeacher);
+            let data = await calendarService.getToBookExamService(page, pageSize, idTeacher, isNotStudent);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);

@@ -285,19 +285,28 @@ class calendarService {
         }
     }
 
-    async getToBookExamService(page: number, pageSize: number, idTeacher: number) {
+    async getToBookExamService(page: number, pageSize: number, idTeacher: number, isNotStudent: string = 'false') {
         try {
             if (!page || !pageSize || !idTeacher) {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Cần nhập đủ các trường');
+            }
+
+            let query: any = {};
+            if (isNotStudent === 'true') {
+                query.student_id = {
+                    [Op.is]: null,
+                };
+            } else {
+                query.student_id = {
+                    [Op.not]: null,
+                };
             }
 
             let offset: number = (page - 1) * pageSize;
             let { count, rows } = await CalendarTeacher.findAndCountAll({
                 where: {
                     teacher_id: idTeacher,
-                    student_id: {
-                        [Op.not]: null,
-                    },
+                    ...query,
                 },
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
