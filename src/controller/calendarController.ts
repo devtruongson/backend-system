@@ -68,7 +68,7 @@ class calendarController {
     async getCalendarForStudent(req: Request, res: Response) {
         try {
             const data = await calendarService.getCalendarForStudent(
-                req.query.id ? +req.query.id : req.body.token_author,
+                req.query.email ? req.query.email : req.body.token_author,
             );
             return res.status(httpStatus.OK).json(data);
         } catch (err) {

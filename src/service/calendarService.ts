@@ -149,56 +149,41 @@ class calendarService {
                 raw: true,
             });
 
+            console.log(checkUserExit);
+
             if (!checkUserExit) {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'student not found');
             }
 
-            const data = await StudentCourse.findAll({
+            const data = await CalendarTeacher.findOne({
                 where: {
                     student_id: checkUserExit.id,
                 },
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
                 },
+                order: [['createdAt', 'DESC']],
                 include: [
+                    {
+                        model: Calendar,
+                        as: 'calendarData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt'],
+                        },
+                    },
+                    {
+                        model: User,
+                        as: 'teacherData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt', 'password'],
+                        },
+                    },
                     {
                         model: Student,
                         as: 'studentData',
                         attributes: {
-                            exclude: ['password', 'createdAt', 'updatedAt'],
+                            exclude: ['createdAt', 'updatedAt', 'password'],
                         },
-                    },
-                    {
-                        model: Course,
-                        as: 'CourseData',
-                        attributes: {
-                            exclude: ['createdAt', 'updatedAt'],
-                        },
-                        include: [
-                            {
-                                model: AllCode,
-                                as: 'TrainingSectorData',
-                            },
-                        ],
-                    },
-                    {
-                        model: CalendarTeacher,
-                        include: [
-                            {
-                                model: Calendar,
-                                as: 'calendarData',
-                                attributes: {
-                                    exclude: ['createdAt', 'updatedAt'],
-                                },
-                            },
-                            {
-                                model: User,
-                                as: 'teacherData',
-                                attributes: {
-                                    exclude: ['password', 'createdAt', 'updatedAt'],
-                                },
-                            },
-                        ],
                     },
                 ],
             });
