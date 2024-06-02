@@ -1,6 +1,8 @@
 import { IsNotEmpty } from 'class-validator';
 
 export class bookingCalendarDto {
+    id: number;
+
     @IsNotEmpty()
     teacher_id: number;
 

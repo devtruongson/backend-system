@@ -28,13 +28,18 @@ class examQuestionService {
                     author_id: authoId,
                     level: level,
                 },
-            },
-            {
                 order: [[Sequelize.literal('RAND()')]],
                 limit: count,
                 attributes: ['id'],
                 raw: true,
             },
+            // {
+            //     order: [[Sequelize.literal('RAND()')]],
+            //     limit: count,
+            //     attributes: ['id'],
+            //     raw: true,
+            //     // nest: true,
+            // },
         );
 
         return questions;

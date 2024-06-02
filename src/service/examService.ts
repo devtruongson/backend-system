@@ -64,7 +64,18 @@ class examService {
                 is_tested: false,
             });
 
-            return ResponseHandler(httpStatus.OK, null, 'Create Exam Successfully');
+            const exam = (await Exam.findOne({
+                where: {
+                    code: data.code,
+                },
+                nest: true,
+            })) as examDto | null;
+
+            if (!exam) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Tạo lỗi vui lòng thử lại');
+            }
+
+            return ResponseHandler(httpStatus.OK, exam.id, 'Create Exam Successfully');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

@@ -3,12 +3,16 @@ import { Op } from 'sequelize';
 import { bookCalendarForStudentDto } from '~/dto/bookCalendarForStudent.dto';
 import { bookingCalendarDto } from '~/dto/bookingCalendar.dto';
 import { createCalendarDto } from '~/dto/createCalendar.dto';
+import { studentDto } from '~/dto/createStudent.dto';
 import { studentBookingDto } from '~/dto/studentBooking';
 import AllCode from '~/models/AllCode';
+import Answer from '~/models/Answer';
 import Calendar from '~/models/Calendar';
 import CalendarTeacher from '~/models/CalendarTeacher';
 import Course from '~/models/Course';
 import Exam from '~/models/Exam';
+import ExamQuestion from '~/models/ExamQuestion';
+import Question from '~/models/Question';
 import Student from '~/models/Student';
 import StudentCourse from '~/models/StudentCourse';
 import User from '~/models/User';
@@ -78,6 +82,14 @@ class calendarService {
         try {
             const query: any = {};
 
+            if (id) {
+                query.teacher_id = id;
+            } else {
+                query.student_id = {
+                    [Op.is]: null,
+                };
+            }
+
             if (filterDay) {
                 query.day = {
                     [Op.gte]: filterDay,
@@ -86,7 +98,6 @@ class calendarService {
 
             const data = await CalendarTeacher.findAll({
                 where: {
-                    teacher_id: id,
                     ...query,
                 },
                 attributes: {
@@ -317,6 +328,36 @@ class calendarService {
                             {
                                 model: Exam,
                                 as: 'examData',
+                                attributes: {
+                                    exclude: ['createdAt', 'updatedAt'],
+                                },
+                                include: [
+                                    {
+                                        model: ExamQuestion,
+                                        as: 'ExamQuestionData',
+                                        attributes: {
+                                            exclude: ['createdAt', 'updatedAt'],
+                                        },
+                                        include: [
+                                            {
+                                                model: Question,
+                                                as: 'QuestionData',
+                                                attributes: {
+                                                    exclude: ['createdAt', 'updatedAt'],
+                                                },
+                                                include: [
+                                                    {
+                                                        model: Answer,
+                                                        as: 'answers',
+                                                        attributes: {
+                                                            exclude: ['createdAt', 'updatedAt'],
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                ],
                             },
                         ],
                     },
@@ -341,6 +382,147 @@ class calendarService {
                 },
             };
             return ResponseHandler(httpStatus.OK, data, 'Calendar teacher');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async searchCalendarService(textSearch: string) {
+        try {
+            if (!textSearch) {
+                return ResponseHandler(httpStatus.OK, null, 'Calendar teacher');
+            }
+
+            let listStudent = (await Student.findAll({
+                where: {
+                    [Op.or]: [
+                        { fullName: { [Op.like]: `%${textSearch}%` } },
+                        { phoneNumber: { [Op.like]: `%${textSearch}%` } },
+                        { email: { [Op.like]: `%${textSearch}%` } },
+                    ],
+                },
+                raw: true,
+            })) as studentDto[] | [];
+
+            const listId: number[] = listStudent.map((item) => {
+                return item.id;
+            });
+
+            const listCalendar = await CalendarTeacher.findAll({
+                where: {
+                    student_id: {
+                        [Op.in]: listId,
+                    },
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+                include: [
+                    {
+                        model: Student,
+                        as: 'studentData',
+                        attributes: {
+                            exclude: ['password', 'createdAt', 'updatedAt'],
+                        },
+                        include: [
+                            {
+                                model: Exam,
+                                as: 'examData',
+                                attributes: {
+                                    exclude: ['createdAt', 'updatedAt'],
+                                },
+                                include: [
+                                    {
+                                        model: ExamQuestion,
+                                        as: 'ExamQuestionData',
+                                        attributes: {
+                                            exclude: ['createdAt', 'updatedAt'],
+                                        },
+                                        include: [
+                                            {
+                                                model: Question,
+                                                as: 'QuestionData',
+                                                attributes: {
+                                                    exclude: ['createdAt', 'updatedAt'],
+                                                },
+                                                include: [
+                                                    {
+                                                        model: Answer,
+                                                        as: 'answers',
+                                                        attributes: {
+                                                            exclude: ['createdAt', 'updatedAt'],
+                                                        },
+                                                    },
+                                                ],
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        model: User,
+                        as: 'teacherData',
+                        attributes: {
+                            exclude: ['password', 'createdAt', 'updatedAt'],
+                        },
+                    },
+                ],
+            });
+
+            return ResponseHandler(httpStatus.OK, listCalendar, 'Calendar teacher');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async addStudentToCalendarService(idStudent: number, idCalendar: number) {
+        try {
+            let query: any = {};
+
+            if (!idStudent) {
+                query.student_id = null;
+            } else {
+                query.student_id = idStudent;
+            }
+
+            const calendarOld = (await CalendarTeacher.findOne({
+                where: {
+                    student_id: idStudent,
+                },
+                raw: true,
+            })) as bookingCalendarDto | null;
+
+            console.log(calendarOld);
+
+            if (calendarOld) {
+                await CalendarTeacher.update(
+                    {
+                        student_id: null,
+                    },
+                    {
+                        where: {
+                            id: calendarOld.id,
+                        },
+                    },
+                );
+            }
+
+            await CalendarTeacher.update(
+                {
+                    ...query,
+                },
+                {
+                    where: {
+                        id: idCalendar,
+                    },
+                },
+            );
+
+            return ResponseHandler(httpStatus.OK, null, 'Update succses');
         } catch (error) {
             console.log(error);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
