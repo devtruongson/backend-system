@@ -12,6 +12,7 @@ const initApiExam = (app: Express) => {
     );
 
     router.get('/student', handleCheckTokenUser, examController.handleGetExam);
+    router.get('/student-desc', examController.handleGetExamDESC);
 
     router.get(
         '/teacher',

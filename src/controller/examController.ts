@@ -57,6 +57,21 @@ class examController {
         }
     }
 
+    async handleGetExamDESC(req: Request, res: Response) {
+        try {
+            let studentId = parseInt(req.query?.studentId as string);
+
+            let data = await examService.handleGetExamDESC(studentId);
+
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
+
     //DELETE
 
     async handleDeleteExam(req: Request, res: Response) {

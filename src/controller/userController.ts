@@ -45,6 +45,16 @@ class UserController {
         }
     }
 
+    async getAllUsersByType(req: Request, res: Response) {
+        try {
+            const data = await userService.getAllUsersByType(req.query.type as any);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
     async getOneUser(req: Request, res: Response) {
         try {
             const data = await userService.getOneUser(+req.params.id);

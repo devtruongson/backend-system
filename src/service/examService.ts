@@ -7,6 +7,7 @@ import Exam from '~/models/Exam';
 import ExamQuestion from '~/models/ExamQuestion';
 import Question from '~/models/Question';
 import { ResponseHandler } from '~/utils/Response';
+import examQuestionService from './examQuestionService';
 
 class examService {
     async handleGetOneExam(id: number, isCompleted: boolean = false): Promise<examDto | null> {
@@ -54,7 +55,7 @@ class examService {
 
     async createExamService(data: examDto) {
         try {
-            await Exam.create({
+            const examCreate: any = await Exam.create({
                 ...data,
                 correct_result_count: 0,
                 total_result: 0,
@@ -63,6 +64,13 @@ class examService {
                 is_testing: false,
                 is_tested: false,
             });
+
+            const check = await examQuestionService.createExamQuestionAutoService(
+                examCreate.id,
+                +data.total_question,
+                +data.level,
+            );
+            console.log(check);
 
             const exam = (await Exam.findOne({
                 where: {
@@ -316,6 +324,41 @@ class examService {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
+    }
+
+    async handleGetExamDESC(studentId: number) {
+        let data = await Exam.findAll({
+            where: {
+                student_id: studentId,
+            },
+            order: [['id', 'DESC']],
+            include: [
+                {
+                    model: ExamQuestion,
+                    as: 'ExamQuestionData',
+                    attributes: {
+                        exclude: ['createdAt', 'updatedAt'],
+                    },
+                    include: [
+                        {
+                            model: Question,
+                            as: 'QuestionData',
+                            attributes: {
+                                exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                            },
+                            include: [
+                                {
+                                    model: Answer,
+                                    as: 'answers',
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        });
+
+        return ResponseHandler(httpStatus.OK, data, 'All Exam');
     }
 }
 

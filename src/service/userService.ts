@@ -128,6 +128,36 @@ class UserService {
         }
     }
 
+    async getAllUsersByType(type: string) {
+        try {
+            const users = await User.findAll({
+                where: {
+                    role: +type,
+                },
+                include: [
+                    {
+                        model: AllCode,
+                        as: 'roleData',
+                        attributes: ['type', 'title', 'code'],
+                    },
+                    {
+                        model: AllCode,
+                        as: 'addressData',
+                        attributes: ['type', 'title', 'code'],
+                    },
+                ],
+                attributes: {
+                    exclude: ['password', 'createdAt', 'updatedAt'],
+                },
+            });
+
+            return ResponseHandler(httpStatus.OK, users, 'ok');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
     async getOneUser(id: number) {
         try {
             const user = await User.findOne({
