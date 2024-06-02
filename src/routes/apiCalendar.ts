@@ -34,6 +34,8 @@ const initCalenderRouter = (app: Express) => {
         calendarController.handleGetCalendarToBookExam,
     );
 
+    router.get('/all', calendarController.handleGetAllCalendar);
+
     router.get('/search', calendarController.handleSearchCalendar);
 
     router.get('/student', handleCheckTokenUser, calendarController.getCalendarForStudent);
@@ -45,6 +47,7 @@ const initCalenderRouter = (app: Express) => {
         // handleCheckTokenSale,
         calendarController.handleAddStudentToCalendar,
     );
+    router.patch('/change-status', calendarController.handleChangeStatus);
 
     return app.use('/v1/calendar', router);
 };

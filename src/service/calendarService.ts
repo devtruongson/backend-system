@@ -78,7 +78,7 @@ class calendarService {
         }
     }
 
-    async getCalendarTeacher(id: number, filterDay?: string) {
+    async getCalendarTeacher(id: number, filterDay?: string, filter?: string) {
         try {
             const query: any = {};
 
@@ -91,7 +91,7 @@ class calendarService {
             }
 
             if (filterDay) {
-                query.day = {
+                query.time_stamp_start = {
                     [Op.gte]: filterDay,
                 };
             }
@@ -464,7 +464,7 @@ class calendarService {
         }
     }
 
-    async addStudentToCalendarService(idStudent: number, idCalendar: number) {
+    async addStudentToCalendarService(idStudent: number, idCalendar: number, status?: string) {
         try {
             let query: any = {};
 
@@ -481,7 +481,31 @@ class calendarService {
                 raw: true,
             })) as bookingCalendarDto | null;
 
-            console.log(calendarOld);
+            if (status) {
+                console.log(status);
+                switch (status) {
+                    case 'is_reservation': {
+                        query.is_reservation = true;
+                        query.is_confirm = false;
+                        query.is_interviewed_meet = false;
+                        break;
+                    }
+
+                    case 'is_confirm': {
+                        query.is_reservation = false;
+                        query.is_confirm = true;
+                        query.is_interviewed_meet = false;
+                        break;
+                    }
+
+                    case 'is_interviewed_meet': {
+                        query.is_reservation = false;
+                        query.is_confirm = false;
+                        query.is_interviewed_meet = true;
+                        break;
+                    }
+                }
+            }
 
             if (calendarOld) {
                 await CalendarTeacher.update(
@@ -508,6 +532,106 @@ class calendarService {
             );
 
             return ResponseHandler(httpStatus.OK, null, 'Update succses');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async handleGetAllCalendar() {
+        try {
+            const timeCurrent = new Date().getTime();
+            const data = await CalendarTeacher.findAll({
+                where: {
+                    student_id: {
+                        [Op.eq]: null,
+                    },
+                    time_stamp_start: {
+                        [Op.gte]: timeCurrent,
+                    },
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+                include: [
+                    {
+                        model: Student,
+                        as: 'studentData',
+                        attributes: {
+                            exclude: ['password', 'createdAt', 'updatedAt'],
+                        },
+                        include: [
+                            {
+                                model: Exam,
+                                as: 'examData',
+                            },
+                        ],
+                    },
+                    {
+                        model: User,
+                        as: 'teacherData',
+                        attributes: {
+                            exclude: ['password', 'createdAt', 'updatedAt'],
+                        },
+                    },
+                ],
+            });
+            return ResponseHandler(httpStatus.OK, data, 'Calendar teacher');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async handleChangeStatus(status: string, id: number, idCalendar: number, isCancel?: string) {
+        try {
+            if (!status || !id || !idCalendar) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Missing required parameters');
+            }
+
+            const query: any = {};
+            if (!isCancel) {
+                switch (status) {
+                    case 'is_reservation': {
+                        query.is_reservation = true;
+                        query.is_confirm = false;
+                        query.is_interviewed_meet = false;
+                        break;
+                    }
+
+                    case 'is_confirm': {
+                        query.is_reservation = false;
+                        query.is_confirm = true;
+                        query.is_interviewed_meet = false;
+                        break;
+                    }
+
+                    case 'is_interviewed_meet': {
+                        query.is_reservation = false;
+                        query.is_confirm = false;
+                        query.is_interviewed_meet = true;
+                        break;
+                    }
+                }
+            } else {
+                query.is_reservation = false;
+                query.is_confirm = false;
+                query.is_interviewed_meet = false;
+                query.student_id = null;
+            }
+            await CalendarTeacher.update(
+                {
+                    ...query,
+                },
+                {
+                    where: {
+                        student_id: +id,
+                        id: +idCalendar,
+                    },
+                },
+            );
+
+            return ResponseHandler(httpStatus.OK, null, 'Calendar teacher');
         } catch (error) {
             console.log(error);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

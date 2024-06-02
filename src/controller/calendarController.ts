@@ -128,7 +128,36 @@ class calendarController {
         try {
             let idStudent: number = parseInt(req.query.idStudent as string);
             let idCalendar: number = parseInt(req.query.idCalendar as string);
-            let data = await calendarService.addStudentToCalendarService(idStudent, idCalendar);
+            let data = await calendarService.addStudentToCalendarService(
+                idStudent,
+                idCalendar,
+                req.query.status as string,
+            );
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
+    async handleGetAllCalendar(req: Request, res: Response) {
+        try {
+            let data = await calendarService.handleGetAllCalendar();
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
+    async handleChangeStatus(req: Request, res: Response) {
+        try {
+            let data = await calendarService.handleChangeStatus(
+                req.query.status as string,
+                req.query.id as any,
+                req.query.idCalendar as any,
+                req.query.isCancel as any,
+            );
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
