@@ -49,9 +49,9 @@ Student.init(
         address_detail: {
             type: DataTypes.STRING,
         },
-        // course_code: {
-        //     type: DataTypes.STRING,
-        // },
+        course_code: {
+            type: DataTypes.STRING,
+        },
     },
     {
         sequelize,
