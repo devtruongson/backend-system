@@ -39,10 +39,9 @@ class examQuestionController {
         try {
             let examId: number = parseInt(req.query.examId as string);
             let totalQuestion: number = parseInt(req.query.totalQuestion as string);
-            let authorId: number = parseInt(req.query.authorId as string);
             let level: number = parseInt(req.query.level as string);
 
-            let data = await examQuestionService.createExamQuestionAutoService(examId, totalQuestion, authorId, level);
+            let data = await examQuestionService.createExamQuestionAutoService(examId, totalQuestion, level);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);

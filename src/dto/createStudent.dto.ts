@@ -40,4 +40,7 @@ export class studentDto {
     commune: string;
 
     address_detail: string;
+
+    @IsNotEmpty()
+    course_code: string;
 }

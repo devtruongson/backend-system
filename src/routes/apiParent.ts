@@ -5,7 +5,11 @@ import { handleCheckTokenUser } from '~/middleware/jwtActions';
 const router = express.Router();
 
 const initApiParent = (app: Express) => {
-    router.post('/', handleCheckTokenUser, parentController.handleCreateParent);
+    router.post(
+        '/',
+        //  handleCheckTokenUser,
+        parentController.handleCreateParent,
+    );
 
     router.delete('/:id', handleCheckTokenUser, parentController.handleDeleteParent);
 
