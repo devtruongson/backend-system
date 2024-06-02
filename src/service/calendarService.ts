@@ -91,7 +91,7 @@ class calendarService {
             }
 
             if (filterDay) {
-                query.day = {
+                query.time_stamp_start = {
                     [Op.gte]: filterDay,
                 };
             }

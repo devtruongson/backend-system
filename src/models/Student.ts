@@ -49,6 +49,9 @@ Student.init(
         address_detail: {
             type: DataTypes.STRING,
         },
+        // course_code: {
+        //     type: DataTypes.STRING,
+        // },
     },
     {
         sequelize,
@@ -57,13 +60,13 @@ Student.init(
 );
 
 // Student.belongsTo(AllCode, {
-//     foreignKey: 'address',
+//     foreignKey: 'course_code',
 //     targetKey: 'id',
 //     as: 'AllCodeData',
 // });
 
 // AllCode.hasMany(Student, {
-//     foreignKey: 'address',
+//     foreignKey: 'course_code',
 //     as: 'StudentData',
 // });
 
