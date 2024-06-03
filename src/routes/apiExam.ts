@@ -20,7 +20,7 @@ const initApiExam = (app: Express) => {
         examController.handleGetExam,
     );
 
-    router.get('/get-one', handleCheckTokenUser, examController.handleGetOneExam);
+    router.get('/get-one', examController.handleGetOneExam);
 
     router.delete(
         '/:id',
