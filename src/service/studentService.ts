@@ -1,10 +1,13 @@
 import httpStatus from 'http-status';
+import { Op } from 'sequelize';
 import { studentDto } from '~/dto/createStudent.dto';
 import { loginDto } from '~/dto/login.dto';
 import { comparePassword, endCodePassword } from '~/helpers/bcrypt';
 import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import { handleCreateToken } from '~/middleware/jwtActions';
 import AllCode from '~/models/AllCode';
+import CalendarTeacher from '~/models/CalendarTeacher';
+import Exam from '~/models/Exam';
 import Parent from '~/models/Parent';
 import Student from '~/models/Student';
 
@@ -188,7 +191,7 @@ class studentService {
         }
     }
 
-    async handleGetAllStudent(page: number = 1, pageSize: number = 10) {
+    async handleGetAllStudent(page: number = 1, pageSize: number = 10, course_code = 'ALL', filter: string = 'all') {
         try {
             let resData;
             if (!page || !pageSize) {
@@ -199,26 +202,439 @@ class studentService {
                 });
             }
 
-            let offset: number = (page - 1) * pageSize;
-            let { count, rows } = await Student.findAndCountAll({
-                attributes: {
-                    exclude: ['password'],
-                },
-                offset: +offset,
-                limit: +pageSize,
-            });
+            const query: any = {};
 
-            resData = {
-                items: rows,
-                meta: {
-                    currentPage: page,
-                    totalIteams: count,
-                    totalPages: Math.ceil(count / pageSize),
-                },
-            };
-            return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            if (course_code === 'ENG') {
+                query.course_code = 'ENG';
+            }
+
+            if (course_code === 'MATH') {
+                query.course_code = 'MATH';
+            }
+
+            if (filter === 'all') {
+                let offset: number = (page - 1) * pageSize;
+                let { count, rows } = await Student.findAndCountAll({
+                    where: {
+                        ...query,
+                    },
+                    attributes: {
+                        exclude: ['password'],
+                    },
+                    offset: +offset,
+                    limit: +pageSize,
+                });
+
+                resData = {
+                    items: rows,
+                    meta: {
+                        currentPage: page,
+                        totalIteams: count,
+                        totalPages: Math.ceil(count / pageSize),
+                    },
+                };
+                return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            }
+
+            if (filter === 'reservation') {
+                let offset: number = (page - 1) * pageSize;
+                let { count, rows }: { count: number; rows: any } = await CalendarTeacher.findAndCountAll({
+                    where: {
+                        student_id: {
+                            [Op.ne]: null,
+                        },
+                        is_reservation: true,
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                            include: [
+                                {
+                                    model: Exam,
+                                    as: 'examData',
+                                },
+                            ],
+                        },
+                    ],
+                    offset: +offset,
+                    limit: +pageSize,
+                    nest: true,
+                });
+
+                resData = {
+                    items: rows.map((item: any) => item.studentData),
+                    meta: {
+                        currentPage: page,
+                        totalIteams: count,
+                        totalPages: Math.ceil(count / pageSize),
+                    },
+                };
+                return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            }
+
+            if (filter === 'confirm') {
+                let offset: number = (page - 1) * pageSize;
+                let { count, rows }: { count: number; rows: any } = await CalendarTeacher.findAndCountAll({
+                    where: {
+                        student_id: {
+                            [Op.ne]: null,
+                        },
+                        is_confirm: true,
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                            include: [
+                                {
+                                    model: Exam,
+                                    as: 'examData',
+                                },
+                            ],
+                        },
+                    ],
+                    offset: +offset,
+                    limit: +pageSize,
+                    nest: true,
+                });
+
+                resData = {
+                    items: rows.map((item: any) => item.studentData),
+                    meta: {
+                        currentPage: page,
+                        totalIteams: count,
+                        totalPages: Math.ceil(count / pageSize),
+                    },
+                };
+                return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            }
+
+            if (filter === 'interviewed_meet') {
+                let offset: number = (page - 1) * pageSize;
+                let { count, rows }: { count: number; rows: any } = await CalendarTeacher.findAndCountAll({
+                    where: {
+                        student_id: {
+                            [Op.ne]: null,
+                        },
+                        is_interviewed_meet: true,
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                            include: [
+                                {
+                                    model: Exam,
+                                    as: 'examData',
+                                },
+                            ],
+                        },
+                    ],
+                    offset: +offset,
+                    limit: +pageSize,
+                    nest: true,
+                });
+
+                resData = {
+                    items: rows.map((item: any) => item.studentData),
+                    meta: {
+                        currentPage: page,
+                        totalIteams: count,
+                        totalPages: Math.ceil(count / pageSize),
+                    },
+                };
+                return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            }
+
+            if (filter === 'cancel') {
+                let offset: number = (page - 1) * pageSize;
+                let { count, rows }: { count: number; rows: any } = await CalendarTeacher.findAndCountAll({
+                    where: {
+                        student_id: {
+                            [Op.ne]: null,
+                        },
+                        is_cancel: true,
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                            include: [
+                                {
+                                    model: Exam,
+                                    as: 'examData',
+                                },
+                            ],
+                        },
+                    ],
+                    offset: +offset,
+                    limit: +pageSize,
+                    nest: true,
+                });
+
+                resData = {
+                    items: rows.map((item: any) => item.studentData),
+                    meta: {
+                        currentPage: page,
+                        totalIteams: count,
+                        totalPages: Math.ceil(count / pageSize),
+                    },
+                };
+                return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            }
+
+            if (filter === 'booked') {
+                let offset: number = (page - 1) * pageSize;
+                let { count, rows }: { count: number; rows: any } = await Exam.findAndCountAll({
+                    where: {
+                        student_id: {
+                            [Op.ne]: null,
+                        },
+                        is_booked: true,
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                            include: [
+                                {
+                                    model: Exam,
+                                    as: 'examData',
+                                },
+                            ],
+                        },
+                    ],
+                    offset: +offset,
+                    limit: +pageSize,
+                    nest: true,
+                });
+
+                resData = {
+                    items: rows.map((item: any) => item.studentData),
+                    meta: {
+                        currentPage: page,
+                        totalIteams: count,
+                        totalPages: Math.ceil(count / pageSize),
+                    },
+                };
+                return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            }
+
+            if (filter === 'testing') {
+                let offset: number = (page - 1) * pageSize;
+                let { count, rows }: { count: number; rows: any } = await Exam.findAndCountAll({
+                    where: {
+                        student_id: {
+                            [Op.ne]: null,
+                        },
+                        is_testing: true,
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                            include: [
+                                {
+                                    model: Exam,
+                                    as: 'examData',
+                                },
+                            ],
+                        },
+                    ],
+                    offset: +offset,
+                    limit: +pageSize,
+                    nest: true,
+                });
+
+                resData = {
+                    items: rows.map((item: any) => item.studentData),
+                    meta: {
+                        currentPage: page,
+                        totalIteams: count,
+                        totalPages: Math.ceil(count / pageSize),
+                    },
+                };
+                return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            }
+
+            if (filter === 'completed') {
+                let offset: number = (page - 1) * pageSize;
+                let { count, rows }: { count: number; rows: any } = await Exam.findAndCountAll({
+                    where: {
+                        student_id: {
+                            [Op.ne]: null,
+                        },
+                        is_completed: true,
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                            include: [
+                                {
+                                    model: Exam,
+                                    as: 'examData',
+                                },
+                            ],
+                        },
+                    ],
+                    offset: +offset,
+                    limit: +pageSize,
+                    nest: true,
+                });
+
+                resData = {
+                    items: rows.map((item: any) => item.studentData),
+                    meta: {
+                        currentPage: page,
+                        totalIteams: count,
+                        totalPages: Math.ceil(count / pageSize),
+                    },
+                };
+                return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            }
+
+            if (filter === 'result') {
+                let offset: number = (page - 1) * pageSize;
+                let { count, rows }: { count: number; rows: any } = await Exam.findAndCountAll({
+                    where: {
+                        student_id: {
+                            [Op.ne]: null,
+                        },
+                        correct_result_count: {
+                            [Op.ne]: null,
+                        },
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                            include: [
+                                {
+                                    model: Exam,
+                                    as: 'examData',
+                                },
+                            ],
+                        },
+                    ],
+                    offset: +offset,
+                    limit: +pageSize,
+                    nest: true,
+                });
+
+                resData = {
+                    items: rows.map((item: any) => item.studentData),
+                    meta: {
+                        currentPage: page,
+                        totalIteams: count,
+                        totalPages: Math.ceil(count / pageSize),
+                    },
+                };
+                return ResponseHandler(httpStatus.OK, resData, ' course successfully 11');
+            }
         } catch (error) {
             console.log(error);
+        }
+    }
+
+    async handleGetCountStudent(type: string) {
+        if (type === 'all') {
+            return await Student.count();
+        } else if (type === 'ENG' || type === 'MATH') {
+            return await Student.count({
+                where: {
+                    course_code: type,
+                },
+            });
+        }
+
+        if (type === 'meet') {
+            const dataBuild = {
+                reservation: 0,
+                confirm: 0,
+                interviewed_meet: 0,
+                fail: 0,
+                cancel: 0,
+            };
+
+            const dataQuery: any = await CalendarTeacher.findAll({
+                where: {
+                    student_id: {
+                        [Op.ne]: null,
+                    },
+                },
+                raw: true,
+            });
+
+            const timeStamp = new Date().getTime();
+            dataBuild.fail = dataQuery.filter((item: any) => {
+                const timeStart = new Date(+item.time_stamp_start).getTime();
+                if (timeStamp - timeStart > 0 && item.is_interviewed_meet === true) {
+                    return true;
+                }
+            }).length;
+            dataBuild.cancel = dataQuery.filter((item: any) => {
+                const timeStart = new Date(+item.time_stamp_start).getTime();
+                if (timeStamp - timeStart > 0 && !item.is_interviewed_meet) {
+                    return true;
+                }
+            }).length;
+
+            dataBuild.reservation = dataQuery.filter((item: any) => item.is_reservation).length;
+            dataBuild.confirm = dataQuery.filter((item: any) => item.is_confirm).length;
+            dataBuild.interviewed_meet = dataQuery.filter((item: any) => item.is_interviewed_meet).length;
+
+            return dataBuild;
+        }
+
+        if (type === 'other') {
+            const dataBuild = {
+                is_booked: 0,
+                is_testing: 0,
+                is_completed: 0,
+                result: 0,
+            };
+
+            const dataQuery: any = await Exam.findAll({
+                where: {
+                    student_id: {
+                        [Op.ne]: null,
+                    },
+                },
+                raw: true,
+            });
+
+            dataBuild.is_booked = dataQuery.filter((item: any) => item.is_booked).length;
+            dataBuild.is_testing = dataQuery.filter((item: any) => item.is_testing).length;
+            dataBuild.is_completed = dataQuery.filter((item: any) => item.is_completed).length;
+            dataBuild.result = dataQuery.filter((item: any) => item.correct_result_count).length;
+
+            return dataBuild;
         }
     }
 
