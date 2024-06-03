@@ -6,10 +6,12 @@ import { comparePassword, endCodePassword } from '~/helpers/bcrypt';
 import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import { handleCreateToken } from '~/middleware/jwtActions';
 import AllCode from '~/models/AllCode';
+import Calendar from '~/models/Calendar';
 import CalendarTeacher from '~/models/CalendarTeacher';
 import Exam from '~/models/Exam';
 import Parent from '~/models/Parent';
 import Student from '~/models/Student';
+import User from '~/models/User';
 
 import { ResponseHandler } from '~/utils/Response';
 
@@ -617,13 +619,8 @@ class studentService {
                     return true;
                 }
             }).length;
-            dataBuild.cancel = dataQuery.filter((item: any) => {
-                const timeStart = new Date(+item.time_stamp_start).getTime();
-                if (timeStamp - timeStart > 0 && !item.is_interviewed_meet) {
-                    return true;
-                }
-            }).length;
 
+            dataBuild.cancel = dataQuery.filter((item: any) => item.is_cancel).length;
             dataBuild.reservation = dataQuery.filter((item: any) => item.is_reservation).length;
             dataBuild.confirm = dataQuery.filter((item: any) => item.is_confirm).length;
             dataBuild.interviewed_meet = dataQuery.filter((item: any) => item.is_interviewed_meet).length;
@@ -679,7 +676,6 @@ class studentService {
             if (!id || !level) {
                 return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
             }
-
             await Student.update(
                 {
                     level: level,
@@ -694,6 +690,61 @@ class studentService {
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }
+    async handleGetOneStudent(id: number) {
+        try {
+            const student: any = await Student.findOne({
+                where: { id: id },
+                attributes: {
+                    exclude: ['password'],
+                },
+            });
+            const calendar = await CalendarTeacher.findAll({
+                where: {
+                    student_id: id,
+                },
+                include: [
+                    {
+                        model: Calendar,
+                        as: 'calendarData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt'],
+                        },
+                    },
+                    {
+                        model: User,
+                        as: 'teacherData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt', 'password'],
+                        },
+                    },
+                ],
+            });
+
+            const exam = await Exam.findAll({
+                where: {
+                    student_id: id,
+                },
+            });
+
+            return ResponseHandler(
+                httpStatus.OK,
+                {
+                    student,
+                    exam,
+                    calendar,
+                },
+                'Info Student ',
+            );
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+    // async getStudentMathService(teacherId: number, page: number, pageSize: number) {
+    //     try {
+    //         if (!teacherId || !page || !pageSize) {
+    //             return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Cần nhập đủ thông tin'));
+    //         }
 }
 
 export default new studentService();

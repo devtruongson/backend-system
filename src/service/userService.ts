@@ -1,9 +1,12 @@
 import httpStatus from 'http-status';
+import { Op } from 'sequelize';
 import { sequelize } from '~/configs/connectDB';
 import { loginDto } from '~/dto/login.dto';
 import { comparePassword, endCodePassword } from '~/helpers/bcrypt';
 import { handleCreateToken } from '~/middleware/jwtActions';
 import AllCode from '~/models/AllCode';
+import Calendar from '~/models/Calendar';
+import CalendarTeacher from '~/models/CalendarTeacher';
 import User from '~/models/User';
 import { IUser } from '~/utils/interface';
 import { ResponseHandler } from '~/utils/Response';
@@ -21,6 +24,31 @@ class UserService {
                 ...body,
                 password: passwordHash,
             });
+            return ResponseHandler(httpStatus.OK, user, 'User create successfully');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async handleCreateUserBulk(body: IUser[]) {
+        try {
+            const data = await Promise.all(
+                await body.map(async (user) => {
+                    return {
+                        ...user,
+                        password: await endCodePassword(user.password),
+                    };
+                }),
+            );
+
+            const user = User.bulkCreate(
+                data.map((item) => {
+                    return {
+                        ...item,
+                    };
+                }),
+            );
             return ResponseHandler(httpStatus.OK, user, 'User create successfully');
         } catch (err) {
             console.log(err);
@@ -93,7 +121,11 @@ class UserService {
     async getAllUsers(data: any) {
         try {
             let offset: number = (data.page - 1) * data.pageSize;
-            let { count, rows } = await User.findAndCountAll({
+
+            let { count, rows }: { count: number; rows: any } = await User.findAndCountAll({
+                where: {
+                    role: data.role,
+                },
                 include: [
                     {
                         model: AllCode,
@@ -110,11 +142,46 @@ class UserService {
                     exclude: ['password', 'createdAt', 'updatedAt'],
                 },
                 offset: offset,
-                limit: data.pageSize,
+                limit: +data.pageSize,
             });
 
+            const dataRes = await Promise.all(
+                await rows.map(async (row: any) => {
+                    const countCalendar = await CalendarTeacher.count({
+                        where: {
+                            teacher_id: row.id,
+                            day: {
+                                [Op.gte]: new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
+                            },
+                        },
+                    });
+
+                    const calendarData = await CalendarTeacher.findAll({
+                        where: {
+                            teacher_id: row.id,
+                            day: {
+                                [Op.gte]: data.day ? data.day : new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
+                            },
+                        },
+                        include: [
+                            {
+                                model: Calendar,
+                                as: 'calendarData',
+                            },
+                        ],
+                    });
+
+                    return {
+                        ...row.toJSON(),
+                        countCalendar,
+                        calendarData,
+                        listTimeBooked: calendarData.map((item: any) => item.time_stamp_start),
+                    };
+                }),
+            );
+
             let resData = {
-                items: rows,
+                items: dataRes,
                 meta: {
                     currentPage: data.page,
                     totalIteams: count,
