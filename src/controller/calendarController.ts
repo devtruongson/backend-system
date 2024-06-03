@@ -91,7 +91,10 @@ class calendarController {
 
     async handleUnBooking(req: Request, res: Response) {
         try {
-            let data = await calendarService.unbookingService(req.query.timeStart as string);
+            let data = await calendarService.unbookingService(
+                req.query.timeStart as string,
+                req.query.idTeacher as any,
+            );
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
@@ -143,7 +146,7 @@ class calendarController {
 
     async handleGetAllCalendar(req: Request, res: Response) {
         try {
-            let data = await calendarService.handleGetAllCalendar();
+            let data = await calendarService.handleGetAllCalendar(req.query.idUser as any);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);

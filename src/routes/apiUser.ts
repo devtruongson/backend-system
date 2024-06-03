@@ -8,7 +8,8 @@ const initApiUser = (app: Express) => {
     router.post('/login', userController.handleLogin);
     router.get('/get-user', userController.handleGet);
     router.post('/create', userController.handleCreateUser);
-    router.get('/all', handleCheckTokenSale, userController.getAllUsers);
+    router.post('/create-bulk', userController.handleCreateUserBulk);
+    router.get('/all', userController.getAllUsers);
     router.get('/all-by-type', userController.getAllUsersByType);
     router.get('/:id', handleCheckTokenUserInSystem, userController.getOneUser);
 

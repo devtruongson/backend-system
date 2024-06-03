@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 import AllCode from './AllCode';
+import CalendarTeacher from './CalendarTeacher';
 
 class User extends Model {}
 
@@ -81,5 +82,4 @@ User.belongsTo(AllCode, {
     targetKey: 'id',
     as: 'addressData',
 });
-
 export default User;

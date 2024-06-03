@@ -272,10 +272,16 @@ class calendarService {
         }
     }
 
-    async unbookingService(timeStart: string) {
+    async unbookingService(timeStart: string, idTeacher?: number) {
         try {
+            const query: any = {};
+
+            if (idTeacher) {
+                query.teacher_id = +idTeacher;
+            }
+
             await CalendarTeacher.destroy({
-                where: { time_stamp_start: timeStart },
+                where: { time_stamp_start: timeStart, ...query },
             });
 
             return ResponseHandler(httpStatus.OK, null, 'Mua khóa hoc thành công');
@@ -547,14 +553,21 @@ class calendarService {
         }
     }
 
-    async handleGetAllCalendar() {
+    async handleGetAllCalendar(idUser?: string) {
         try {
+            const query: any = {};
+
+            if (idUser) {
+                query.teacher_id = parseInt(idUser);
+            }
+
             const timeCurrent = new Date().getTime();
             const data = await CalendarTeacher.findAll({
                 where: {
                     student_id: {
                         [Op.eq]: null,
                     },
+                    ...query,
                     time_stamp_start: {
                         [Op.gte]: timeCurrent,
                     },
@@ -626,7 +639,7 @@ class calendarService {
                 query.is_reservation = false;
                 query.is_confirm = false;
                 query.is_interviewed_meet = false;
-                query.student_id = null;
+                query.is_cancel = true;
             }
             await CalendarTeacher.update(
                 {

@@ -23,6 +23,18 @@ class UserController {
         }
     }
 
+    async handleCreateUserBulk(req: Request, res: Response) {
+        try {
+            // const isValid = await validateData(CreateUserDto, req.body, res);
+            // if (!isValid) return;
+            const data = await userService.handleCreateUserBulk(req.body);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
     async handleLogin(req: Request, res: Response) {
         try {
             const isValid = await validateData(loginDto, req.body, res);
