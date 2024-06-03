@@ -69,6 +69,9 @@ class questionService {
             let offset: number = (page - 1) * pageSize;
             let { count, rows } = await Question.findAndCountAll({
                 where: { ...query },
+                order: [['id', 'DESC']],
+                offset: offset,
+                limit: pageSize,
                 include: [
                     {
                         model: AllCode,
@@ -81,18 +84,19 @@ class questionService {
                         attributes: ['id', 'answer_title', 'is_right'],
                     },
                 ],
-                offset: offset,
-                limit: pageSize,
+                raw: true,
+                nest: true,
             });
 
             let resData = {
                 items: rows,
                 meta: {
                     currentPage: page,
-                    totalIteams: count,
+                    totalIteams: await Question.count(),
                     totalPages: Math.ceil(count / pageSize),
                 },
             };
+
             return ResponseHandler(httpStatus.OK, resData, 'Questions');
         } catch (err) {
             console.log(err);

@@ -5,6 +5,7 @@ import { comparePassword, endCodePassword } from '~/helpers/bcrypt';
 import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import { handleCreateToken } from '~/middleware/jwtActions';
 import AllCode from '~/models/AllCode';
+import Exam from '~/models/Exam';
 import Parent from '~/models/Parent';
 import Student from '~/models/Student';
 
@@ -238,6 +239,38 @@ class studentService {
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }
+
+    // async getStudentMathService(teacherId: number, page: number, pageSize: number) {
+    //     try {
+    //         if (!teacherId || !page || !pageSize) {
+    //             return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Cần nhập đủ thông tin'));
+    //         }
+
+    //         let offset: number = (page - 1) * pageSize;
+    //         let { count, rows } = await Student.findAndCountAll({
+    //             where:{
+
+    //             }
+    //             include: [{ model: Exam, as: 'examData' }],
+    //             offset: offset,
+    //             limit: pageSize,
+    //         });
+
+    //         let resData = {
+    //             items: rows,
+    //             meta: {
+    //                 currentPage: page,
+    //                 totalIteams: count,
+    //                 totalPages: Math.ceil(count / pageSize),
+    //             },
+    //         };
+
+    //         return ResponseHandler(httpStatus.OK, resData, 'Info Student ');
+    //     } catch (err) {
+    //         console.log(err);
+    //         Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+    //     }
+    // }
 }
 
 export default new studentService();
