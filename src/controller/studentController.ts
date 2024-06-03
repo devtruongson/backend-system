@@ -75,7 +75,24 @@ class studentController {
 
     async handleGetAllStudent(req: Request, res: Response) {
         try {
-            let data = await studentService.handleGetAllStudent(req.query.page as any, req.query.limit as any);
+            let data = await studentService.handleGetAllStudent(
+                req.query.page as any,
+                req.query.limit as any,
+                req.query.course_code as any,
+                req.query.filter as any,
+            );
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
+
+    async handleGetCountStudent(req: Request, res: Response) {
+        try {
+            let data = await studentService.handleGetCountStudent(req.query.type as any);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);

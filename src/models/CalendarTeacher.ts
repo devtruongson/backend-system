@@ -50,6 +50,10 @@ CalendarTeacher.init(
         is_interviewed_meet: {
             type: DataTypes.BOOLEAN,
         },
+
+        is_cancel: {
+            type: DataTypes.BOOLEAN,
+        },
     },
     {
         sequelize,
