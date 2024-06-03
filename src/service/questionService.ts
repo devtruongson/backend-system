@@ -70,8 +70,7 @@ class questionService {
             let { count, rows } = await Question.findAndCountAll({
                 where: { ...query },
                 order: [['id', 'DESC']],
-                offset: offset,
-                limit: pageSize,
+
                 include: [
                     {
                         model: AllCode,
@@ -84,8 +83,10 @@ class questionService {
                         attributes: ['id', 'answer_title', 'is_right'],
                     },
                 ],
-                raw: true,
-                nest: true,
+                offset: offset,
+                limit: pageSize,
+                // raw: true,
+                // nest: true,
             });
 
             let resData = {

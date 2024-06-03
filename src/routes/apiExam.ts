@@ -34,7 +34,7 @@ const initApiExam = (app: Express) => {
         examController.handleUpdateInfoExam,
     );
 
-    router.put('/score', handleCheckTokenUser, examController.handleUpdateScoreExam);
+    router.put('/score', examController.handleUpdateScoreExam);
 
     return app.use('/v1/exam', router);
 };

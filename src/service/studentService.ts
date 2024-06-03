@@ -191,7 +191,14 @@ class studentService {
         }
     }
 
-    async handleGetAllStudent(page: number = 1, pageSize: number = 10, course_code = 'ALL', filter: string = 'all') {
+    async handleGetAllStudent(
+        page: number = 1,
+        pageSize: number = 10,
+        course_code = 'ALL',
+        filter: string = 'all',
+        level: number = 0,
+        textSearch: string = '',
+    ) {
         try {
             let resData;
             if (!page || !pageSize) {
@@ -204,12 +211,24 @@ class studentService {
 
             const query: any = {};
 
+            if (textSearch) {
+                query[Op.or] = [
+                    { fullName: { [Op.like]: `%${textSearch}%` } },
+                    { phoneNumber: { [Op.like]: `%${textSearch}%` } },
+                    { email: { [Op.like]: `%${textSearch}%` } },
+                ];
+            }
+
             if (course_code === 'ENG') {
                 query.course_code = 'ENG';
             }
 
             if (course_code === 'MATH') {
                 query.course_code = 'MATH';
+            }
+
+            if (level) {
+                query.level = level;
             }
 
             if (filter === 'all') {
@@ -655,37 +674,26 @@ class studentService {
         }
     }
 
-    // async getStudentMathService(teacherId: number, page: number, pageSize: number) {
-    //     try {
-    //         if (!teacherId || !page || !pageSize) {
-    //             return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Cần nhập đủ thông tin'));
-    //         }
+    async updateLevelService(id: number, level: number) {
+        try {
+            if (!id || !level) {
+                return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+            }
 
-    //         let offset: number = (page - 1) * pageSize;
-    //         let { count, rows } = await Student.findAndCountAll({
-    //             where:{
-
-    //             }
-    //             include: [{ model: Exam, as: 'examData' }],
-    //             offset: offset,
-    //             limit: pageSize,
-    //         });
-
-    //         let resData = {
-    //             items: rows,
-    //             meta: {
-    //                 currentPage: page,
-    //                 totalIteams: count,
-    //                 totalPages: Math.ceil(count / pageSize),
-    //             },
-    //         };
-
-    //         return ResponseHandler(httpStatus.OK, resData, 'Info Student ');
-    //     } catch (err) {
-    //         console.log(err);
-    //         Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
-    //     }
-    // }
+            await Student.update(
+                {
+                    level: level,
+                },
+                {
+                    where: { id: id },
+                },
+            );
+            return ResponseHandler(httpStatus.OK, null, 'Cập nhật level thành công ');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
 }
 
 export default new studentService();
