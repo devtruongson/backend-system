@@ -228,6 +228,12 @@ class examService {
 
     async deleteExamService(id: number) {
         try {
+            await ExamQuestion.destroy({
+                where: {
+                    exam_id: id,
+                },
+            });
+
             await Exam.destroy({
                 where: { id: id },
             });

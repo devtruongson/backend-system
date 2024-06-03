@@ -314,6 +314,7 @@ class calendarService {
                     teacher_id: idTeacher,
                     ...query,
                 },
+                order: [['time_stamp_start', 'DESC']],
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
                 },
@@ -377,7 +378,7 @@ class calendarService {
                 items: rows,
                 meta: {
                     currentPage: page,
-                    totalIteams: count,
+                    totalIteams: await CalendarTeacher.count(),
                     totalPages: Math.ceil(count / pageSize),
                 },
             };

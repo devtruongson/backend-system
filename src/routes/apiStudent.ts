@@ -16,6 +16,8 @@ const initApiStudent = (app: Express) => {
 
     router.get('/:email', handleCheckTokenUser, studentController.handleGetInfoStudent);
 
+    // router.get('/student-math', handleCheckTokenUser, studentController.handleStudentMath);
+
     return app.use('/v1/student', router);
 };
 
