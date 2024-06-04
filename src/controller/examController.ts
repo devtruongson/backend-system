@@ -132,6 +132,22 @@ class examController {
                 .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
         }
     }
+
+    async ChangeStatus(req: Request, res: Response) {
+        try {
+            if (!req.query.status || !req.query.id) {
+                return res.status(httpStatus.BAD_REQUEST).json({
+                    code: 400,
+                    data: null,
+                    msg: 'missing status or id',
+                });
+            }
+            const data = await examService.ChangeStatus(req.query.status as string, req.query.id as string);
+            return res.status(httpStatus.OK).json(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
 
 export default new examController();

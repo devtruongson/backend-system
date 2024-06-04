@@ -366,6 +366,59 @@ class examService {
 
         return ResponseHandler(httpStatus.OK, data, 'All Exam');
     }
+
+    async ChangeStatus(status: string, id: string) {
+        try {
+            const statusChange = {
+                is_booked: false,
+                is_testing: false,
+                is_tested: false,
+                is_completed: false,
+            };
+
+            switch (status) {
+                case 'is_booked':
+                    statusChange.is_booked = true;
+                    statusChange.is_testing = false;
+                    statusChange.is_tested = false;
+                    statusChange.is_completed = false;
+                    break;
+                case 'is_testing':
+                    statusChange.is_booked = false;
+                    statusChange.is_testing = true;
+                    statusChange.is_tested = false;
+                    statusChange.is_completed = false;
+                    break;
+                case 'is_tested':
+                    statusChange.is_booked = false;
+                    statusChange.is_testing = false;
+                    statusChange.is_tested = true;
+                    statusChange.is_completed = false;
+                    break;
+                case 'is_completed':
+                    statusChange.is_booked = false;
+                    statusChange.is_testing = false;
+                    statusChange.is_tested = false;
+                    statusChange.is_completed = true;
+                    break;
+            }
+
+            await Exam.update(
+                {
+                    ...statusChange,
+                },
+                {
+                    where: {
+                        id: parseInt(id),
+                    },
+                },
+            );
+            return ResponseHandler(httpStatus.OK, null, 'exam updated successfully');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
 }
 
 export default new examService();

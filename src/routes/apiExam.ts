@@ -21,6 +21,7 @@ const initApiExam = (app: Express) => {
     );
 
     router.get('/get-one', examController.handleGetOneExam);
+    router.patch('/change-status', examController.ChangeStatus);
 
     router.delete(
         '/:id',

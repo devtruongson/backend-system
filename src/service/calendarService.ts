@@ -62,10 +62,10 @@ class calendarService {
                 }),
             ]);
             if (checkValidTeacher) {
-                return ResponseHandler(httpStatus.OK, null, 'Bạn đã đăng ký lịch này');
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Bạn đã đăng ký lịch này');
             }
             if (checkCountValid >= 3) {
-                return ResponseHandler(httpStatus.OK, null, 'Đã đủ số lượng thầy cô đăng ký');
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Đã đủ số lượng thầy cô đăng ký');
             }
 
             await CalendarTeacher.create({
@@ -280,9 +280,39 @@ class calendarService {
                 query.teacher_id = +idTeacher;
             }
 
-            await CalendarTeacher.destroy({
-                where: { time_stamp_start: timeStart, ...query },
+            const checkValid = await CalendarTeacher.findOne({
+                where: {
+                    time_stamp_start: timeStart,
+                    ...query,
+                    student_id: {
+                        [Op.ne]: null,
+                    },
+                },
             });
+
+            if (checkValid) {
+                await CalendarTeacher.update(
+                    {
+                        is_reservation: false,
+                        is_confirm: false,
+                        is_interviewed_meet: false,
+                        is_cancel: true,
+                    },
+                    {
+                        where: {
+                            time_stamp_start: timeStart,
+                            ...query,
+                        },
+                    },
+                );
+            } else {
+                await CalendarTeacher.destroy({
+                    where: {
+                        time_stamp_start: timeStart,
+                        ...query,
+                    },
+                });
+            }
 
             return ResponseHandler(httpStatus.OK, null, 'Mua khóa hoc thành công');
         } catch (error) {
