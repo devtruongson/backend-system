@@ -298,7 +298,7 @@ class examService {
                 {
                     correct_result_count: countSuccess,
                     total_result: countSuccess * (10 / exam.total_question),
-                    is_completed: true,
+                    // is_completed: true,
                     is_tested: true,
                 },
                 {
