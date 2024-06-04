@@ -641,7 +641,7 @@ class studentService {
             const timeStamp = new Date().getTime();
             dataBuild.fail = dataQuery.filter((item: any) => {
                 const timeStart = new Date(+item.time_stamp_start).getTime();
-                if (timeStamp - timeStart > 0 && item.is_interviewed_meet === true) {
+                if (timeStamp - timeStart > 0 && item.is_confirm === true) {
                     return true;
                 }
             }).length;

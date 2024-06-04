@@ -77,6 +77,18 @@ class calendarController {
         }
     }
 
+    async getCalendarForStudentMap(req: Request, res: Response) {
+        try {
+            const data = await calendarService.getCalendarForStudentMap(
+                req.query.email ? req.query.email : req.body.token_author,
+            );
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
     async handleStudentCreateBooking(req: Request, res: Response) {
         try {
             let isValid = await validateData(studentBookingDto, req.body, res);
@@ -137,6 +149,7 @@ class calendarController {
                 idStudent,
                 idCalendar,
                 req.query.status as string,
+                req.query.idOld as string,
             );
             return res.status(httpStatus.OK).json(data);
         } catch (err) {

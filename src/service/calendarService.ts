@@ -58,6 +58,7 @@ class calendarService {
                     where: {
                         day: data.day,
                         calendar_id: data.calendar_id,
+                        is_cancel: false,
                     },
                 }),
             ]);
@@ -70,6 +71,10 @@ class calendarService {
 
             await CalendarTeacher.create({
                 ...data,
+                is_reservation: false,
+                is_confirm: false,
+                is_interviewed_meet: false,
+                is_cancel: false,
             });
             return ResponseHandler(httpStatus.OK, data, 'ok');
         } catch (err) {
@@ -160,13 +165,61 @@ class calendarService {
                 raw: true,
             });
 
-            console.log(checkUserExit);
-
             if (!checkUserExit) {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'student not found');
             }
 
             const data = await CalendarTeacher.findOne({
+                where: {
+                    student_id: checkUserExit.id,
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+                order: [['createdAt', 'DESC']],
+                include: [
+                    {
+                        model: Calendar,
+                        as: 'calendarData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt'],
+                        },
+                    },
+                    {
+                        model: User,
+                        as: 'teacherData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt', 'password'],
+                        },
+                    },
+                    {
+                        model: Student,
+                        as: 'studentData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt', 'password'],
+                        },
+                    },
+                ],
+            });
+            return ResponseHandler(httpStatus.OK, data, 'ok');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getCalendarForStudentMap(email: string) {
+        try {
+            const checkUserExit: any = await Student.findOne({
+                where: { email: email },
+                raw: true,
+            });
+
+            if (!checkUserExit) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'student not found');
+            }
+
+            const data = await CalendarTeacher.findAll({
                 where: {
                     student_id: checkUserExit.id,
                 },
@@ -532,7 +585,7 @@ class calendarService {
         }
     }
 
-    async addStudentToCalendarService(idStudent: number, idCalendar: number, status?: string) {
+    async addStudentToCalendarService(idStudent: number, idCalendar: number, status?: string, idOld?: string) {
         try {
             let query: any = {};
 
@@ -545,17 +598,56 @@ class calendarService {
             const calendarOld = (await CalendarTeacher.findOne({
                 where: {
                     student_id: idStudent,
+                    is_confirm: false,
+                    is_interviewed_meet: false,
+                    is_cancel: false,
                 },
                 raw: true,
             })) as bookingCalendarDto | null;
 
+            const checkValidBooking = (await CalendarTeacher.findOne({
+                where: {
+                    student_id: idStudent,
+                    [Op.or]: [{ is_reservation: true }, { is_confirm: true }],
+                    is_interviewed_meet: false,
+                    is_cancel: false,
+                },
+                raw: true,
+            })) as bookingCalendarDto | null;
+            const CalendarBookingNew = (await CalendarTeacher.findOne({
+                where: {
+                    id: idCalendar,
+                },
+                raw: true,
+            })) as bookingCalendarDto | null;
+
+            if (checkValidBooking?.time_stamp_start === CalendarBookingNew?.time_stamp_start) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Không thể đặt lịch phỏng vấn do trùng lịch!');
+            } else {
+                if (idOld) {
+                    await CalendarTeacher.update(
+                        {
+                            is_reservation: false,
+                            is_confirm: false,
+                            is_interviewed_meet: false,
+                            is_cancel: true,
+                        },
+                        {
+                            where: {
+                                id: parseInt(idOld),
+                            },
+                        },
+                    );
+                }
+            }
+
             if (status) {
-                console.log(status);
                 switch (status) {
                     case 'is_reservation': {
                         query.is_reservation = true;
                         query.is_confirm = false;
                         query.is_interviewed_meet = false;
+                        query.is_cancel = false;
                         break;
                     }
 
@@ -563,6 +655,7 @@ class calendarService {
                         query.is_reservation = false;
                         query.is_confirm = true;
                         query.is_interviewed_meet = false;
+                        query.is_cancel = false;
                         break;
                     }
 
@@ -570,6 +663,7 @@ class calendarService {
                         query.is_reservation = false;
                         query.is_confirm = false;
                         query.is_interviewed_meet = true;
+                        query.is_cancel = false;
                         break;
                     }
                 }
