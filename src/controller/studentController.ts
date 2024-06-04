@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import httpStatus from 'http-status';
 import { studentDto } from '~/dto/createStudent.dto';
 import { loginDto } from '~/dto/login.dto';
+import Parent from '~/models/Parent';
 import studentService from '~/service/studentService';
 import { ResponseHandler } from '~/utils/Response';
 import { validateData } from '~/utils/validate';
@@ -80,6 +81,8 @@ class studentController {
                 req.query.limit as any,
                 req.query.course_code as any,
                 req.query.filter as any,
+                parseInt(req.query.level as string),
+                req.query.textSearch as string,
             );
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
@@ -114,21 +117,19 @@ class studentController {
         }
     }
 
-    // async handleStudentMath(req: Request, res: Response) {
-    //     try {
-    //         let teacherId: number = parseInt(req.query.teacherId as string);
-    //         let page = parseInt(req.query.page as string);
-    //         let pageSize = parseInt(req.query.pageSize as string);
-
-    //         let data = await studentService.getStudentMathService(teacherId, page, pageSize);
-    //         return res.status(httpStatus.OK).json(data);
-    //     } catch (err) {
-    //         console.log(err);
-    //         return res
-    //             .status(httpStatus.INTERNAL_SERVER_ERROR)
-    //             .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
-    //     }
-    // }
+    async handleUpdateLevel(req: Request, res: Response) {
+        try {
+            let id: number = parseInt(req.query.id as string);
+            let level: number = parseInt(req.query.level as string);
+            let data = await studentService.updateLevelService(id, level);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
 }
 
 export default new studentController();
