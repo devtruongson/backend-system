@@ -298,7 +298,6 @@ class examService {
                                 }
                                 await ExamQuestion.update(
                                     {
-                                        // is_right: answer.id
                                         selected_answer: answer.id,
                                     },
                                     { where: { id: item.id } },
@@ -309,12 +308,12 @@ class examService {
                 }),
             );
 
+            const point = parseFloat((+countSuccess * (10 / +exam.total_question)).toFixed(2));
+
             await Exam.update(
                 {
                     correct_result_count: countSuccess,
-                    total_result: countSuccess * (10 / exam.total_question),
-                    // // is_completed: true,
-                    // is_tested: true,
+                    total_result: point,
                 },
                 {
                     where: { id: examId },
@@ -324,7 +323,7 @@ class examService {
             await this.ChangeStatus('is_tested', `${examId}`);
 
             let data = {
-                point: countSuccess * (10 / exam.total_question),
+                point: point,
             };
 
             return ResponseHandler(httpStatus.OK, data, '');
