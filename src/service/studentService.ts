@@ -91,6 +91,32 @@ class studentService {
         }
     }
 
+    async CreateStudentBulk(data: studentDto[]) {
+        try {
+            const dataNew = await Promise.all(
+                await data.map(async (user) => {
+                    return {
+                        ...user,
+                        password: await endCodePassword(user.password),
+                    };
+                }),
+            );
+
+            await Student.bulkCreate(
+                dataNew.map((item) => {
+                    return {
+                        ...item,
+                    };
+                }),
+            );
+
+            return ResponseHandler(httpStatus.OK, {}, 'Register Student Successfully');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
     // LOGIN
 
     async loginStudentService(data: loginDto) {

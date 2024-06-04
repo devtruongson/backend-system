@@ -8,7 +8,7 @@ const initApiStudent = (app: Express) => {
     router.post('/register', studentController.handleCreateStudent);
 
     router.post('/login', studentController.handleLoginStudent);
-
+    router.post('/create-bulk', studentController.CreateStudentBulk);
     router.put('/', studentController.handleUpdateStudent);
     router.get('/', studentController.handleGetAllStudent);
     router.get('/one/:id', studentController.handleGetOneStudent);

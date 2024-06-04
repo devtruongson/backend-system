@@ -42,6 +42,18 @@ class studentController {
         }
     }
 
+    async CreateStudentBulk(req: Request, res: Response) {
+        try {
+            const data = await studentService.CreateStudentBulk(req.body);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
+
     //UPDATE
 
     async handleUpdateStudent(req: Request, res: Response) {
