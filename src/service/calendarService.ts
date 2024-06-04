@@ -476,7 +476,6 @@ class calendarService {
                 limit: +pageSize,
             });
 
-            // const coutRecord = await CalendarTeacher.count();
             let data = {
                 items: rows,
                 meta: {
@@ -712,18 +711,22 @@ class calendarService {
                 };
             }
 
-            const timeCurrent = new Date().getTime();
+            const day = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
             const data = await CalendarTeacher.findAll({
                 where: {
                     ...query,
-                    time_stamp_start: {
-                        [Op.gte]: timeCurrent,
+                    day: {
+                        [Op.gte]: new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
                     },
                 },
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
                 },
                 include: [
+                    {
+                        model: Calendar,
+                        as: 'calendarData',
+                    },
                     {
                         model: Student,
                         as: 'studentData',

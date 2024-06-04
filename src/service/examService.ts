@@ -8,6 +8,7 @@ import ExamQuestion from '~/models/ExamQuestion';
 import Question from '~/models/Question';
 import { ResponseHandler } from '~/utils/Response';
 import examQuestionService from './examQuestionService';
+import Student from '~/models/Student';
 
 class examService {
     async handleGetOneExam(id: number, isCompleted: boolean = false): Promise<examDto | null> {
@@ -115,6 +116,13 @@ class examService {
                     where: { ...query },
                     include: [
                         {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password'],
+                            },
+                        },
+                        {
                             model: ExamQuestion,
                             as: 'ExamQuestionData',
                             attributes: {
@@ -151,6 +159,13 @@ class examService {
                 await Exam.findAll({
                     where: { ...query },
                     include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password'],
+                            },
+                        },
                         {
                             model: ExamQuestion,
                             as: 'ExamQuestionData',

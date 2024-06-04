@@ -29,8 +29,6 @@ const initApiExam = (app: Express) => {
         examController.handleDeleteExam,
     );
 
-    router.put('/level', examController.handleChangeLevel);
-
     router.put(
         '/',
         // handleCheckTokenTeacher,
