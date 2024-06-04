@@ -633,7 +633,7 @@ class studentService {
                 is_booked: 0,
                 is_testing: 0,
                 is_completed: 0,
-                result: 0,
+                is_tested: 0,
             };
 
             const dataQuery: any = await Exam.findAll({
@@ -647,8 +647,8 @@ class studentService {
 
             dataBuild.is_booked = dataQuery.filter((item: any) => item.is_booked).length;
             dataBuild.is_testing = dataQuery.filter((item: any) => item.is_testing).length;
+            dataBuild.is_tested = dataQuery.filter((item: any) => item.is_tested).length;
             dataBuild.is_completed = dataQuery.filter((item: any) => item.is_completed).length;
-            dataBuild.result = dataQuery.filter((item: any) => item.correct_result_count).length;
 
             return dataBuild;
         }
