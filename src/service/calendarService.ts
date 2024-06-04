@@ -321,7 +321,13 @@ class calendarService {
         }
     }
 
-    async getToBookExamService(page: number, pageSize: number, idTeacher: number, isNotStudent: string = 'false') {
+    async getToBookExamService(
+        page: number,
+        pageSize: number,
+        idTeacher: number,
+        isNotStudent: string = 'false',
+        isExpired: string = '',
+    ) {
         try {
             if (!page || !pageSize || !idTeacher) {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Cần nhập đủ các trường');
@@ -337,6 +343,22 @@ class calendarService {
                     [Op.not]: null,
                 };
             }
+
+            if (isExpired === 'false') {
+                query.time_stamp_start = {
+                    [Op.gte]: `${new Date().getTime()}`,
+                };
+            }
+
+            if (isExpired === 'true') {
+                query.time_stamp_start = {
+                    [Op.lt]: `${new Date().getTime()}`,
+                };
+            }
+
+            console.log(isExpired);
+
+            console.log(query);
 
             let offset: number = (page - 1) * pageSize;
             let { count, rows } = await CalendarTeacher.findAndCountAll({
