@@ -63,6 +63,7 @@ class examService {
                 is_booked: true,
                 is_testing: false,
                 is_tested: false,
+                level: null,
             });
 
             const check = await examQuestionService.createExamQuestionAutoService(
@@ -70,7 +71,6 @@ class examService {
                 +data.total_question,
                 +data.level,
             );
-            console.log(check);
 
             const exam = (await Exam.findOne({
                 where: {
@@ -298,13 +298,15 @@ class examService {
                 {
                     correct_result_count: countSuccess,
                     total_result: countSuccess * (10 / exam.total_question),
-                    // is_completed: true,
-                    is_tested: true,
+                    // // is_completed: true,
+                    // is_tested: true,
                 },
                 {
                     where: { id: examId },
                 },
             );
+
+            await this.ChangeStatus('is_tested', `${examId}`);
 
             let data = {
                 point: countSuccess * (10 / exam.total_question),
@@ -376,6 +378,8 @@ class examService {
                 is_completed: false,
             };
 
+            console.log(status, id);
+
             switch (status) {
                 case 'is_booked':
                     statusChange.is_booked = true;
@@ -410,6 +414,33 @@ class examService {
                 {
                     where: {
                         id: parseInt(id),
+                    },
+                },
+            );
+            return ResponseHandler(httpStatus.OK, null, 'exam updated successfully');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async changeLevelService(id: number, level: number) {
+        try {
+            if (!id || !level) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'miss value');
+            }
+
+            await Exam.update(
+                {
+                    level: level,
+                    is_booked: false,
+                    is_testing: false,
+                    is_tested: false,
+                    is_completed: true,
+                },
+                {
+                    where: {
+                        id: id,
                     },
                 },
             );

@@ -90,7 +90,7 @@ class studentController {
         try {
             let data = await studentService.handleGetAllStudent(
                 req.query.page as any,
-                req.query.limit as any,
+                req.query.pageSize as any,
                 req.query.course_code as any,
                 req.query.filter as any,
                 parseInt(req.query.level as string),
