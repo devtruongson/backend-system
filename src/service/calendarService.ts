@@ -1,4 +1,5 @@
 import httpStatus from 'http-status';
+import { totalmem } from 'os';
 import { Op } from 'sequelize';
 import { bookCalendarForStudentDto } from '~/dto/bookCalendarForStudent.dto';
 import { bookingCalendarDto } from '~/dto/bookingCalendar.dto';
@@ -356,10 +357,6 @@ class calendarService {
                 };
             }
 
-            console.log(isExpired);
-
-            console.log(query);
-
             let offset: number = (page - 1) * pageSize;
             let { count, rows } = await CalendarTeacher.findAndCountAll({
                 where: {
@@ -426,11 +423,12 @@ class calendarService {
                 limit: +pageSize,
             });
 
+            // const coutRecord = await CalendarTeacher.count();
             let data = {
                 items: rows,
                 meta: {
                     currentPage: page,
-                    totalIteams: await CalendarTeacher.count(),
+                    totalIteams: count,
                     totalPages: Math.ceil(count / pageSize),
                 },
             };
@@ -606,7 +604,7 @@ class calendarService {
         }
     }
 
-    async handleGetAllCalendar(idUser?: string) {
+    async handleGetAllCalendar(idUser?: string, isNotStudent: string = 'true') {
         try {
             const query: any = {};
 
@@ -614,12 +612,15 @@ class calendarService {
                 query.teacher_id = parseInt(idUser);
             }
 
+            if (isNotStudent === 'true') {
+                query.student_id = {
+                    [Op.eq]: null,
+                };
+            }
+
             const timeCurrent = new Date().getTime();
             const data = await CalendarTeacher.findAll({
                 where: {
-                    student_id: {
-                        [Op.eq]: null,
-                    },
                     ...query,
                     time_stamp_start: {
                         [Op.gte]: timeCurrent,

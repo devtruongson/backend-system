@@ -20,7 +20,17 @@ class allCodeController {
 
     async getAllCodeByType(req: Request, res: Response) {
         try {
-            const data = await allCodeService.getAllCodeByType(req.params.type);
+            const data = await allCodeService.getAllCodeByType(req.params.type, req.query.code as string);
+            return res.status(httpStatus.OK).json(data);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
+    async getAllCodeByCode(req: Request, res: Response) {
+        try {
+            const data = await allCodeService.getAllCodeByCode(req.query.code as string);
             return res.status(httpStatus.OK).json(data);
         } catch (error) {
             console.log(error);

@@ -16,17 +16,40 @@ class allCodeService {
         }
     }
 
-    async getAllCodeByType(type: string) {
+    async getAllCodeByType(type: string, code: string = '') {
         try {
             const query: any = {};
 
             if (type.toLocaleLowerCase() !== 'all') {
-                query.where = {
-                    type,
-                };
+                query.type = type;
             }
+
+            if (code) {
+                query.code = code;
+            }
+
             let data = await AllCode.findAll({
-                ...query,
+                where: {
+                    ...query,
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            });
+            return ResponseHandler(httpStatus.OK, data, 'ok');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getAllCodeByCode(code: string) {
+        try {
+            console.log(code);
+            let data = await AllCode.findAll({
+                where: {
+                    code: code,
+                },
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
                 },

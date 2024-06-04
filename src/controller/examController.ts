@@ -148,6 +148,17 @@ class examController {
             console.log(error);
         }
     }
+
+    async handleChangeLevel(req: Request, res: Response) {
+        try {
+            const id: number = parseInt(req.query.id as string);
+            const level: number = parseInt(req.query.level as string);
+            const data = await examService.changeLevelService(id, level);
+            return res.status(httpStatus.OK).json(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
 
 export default new examController();

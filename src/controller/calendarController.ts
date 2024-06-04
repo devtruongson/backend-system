@@ -147,7 +147,10 @@ class calendarController {
 
     async handleGetAllCalendar(req: Request, res: Response) {
         try {
-            let data = await calendarService.handleGetAllCalendar(req.query.idUser as any);
+            let data = await calendarService.handleGetAllCalendar(
+                req.query.idUser as any,
+                req.query.isNotStudent as any,
+            );
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
