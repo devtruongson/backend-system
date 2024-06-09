@@ -43,4 +43,6 @@ export class studentDto {
 
     @IsNotEmpty()
     course_code: string;
+
+    token_author: string;
 }

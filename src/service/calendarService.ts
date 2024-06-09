@@ -13,6 +13,7 @@ import CalendarTeacher from '~/models/CalendarTeacher';
 import Course from '~/models/Course';
 import Exam from '~/models/Exam';
 import ExamQuestion from '~/models/ExamQuestion';
+import Log from '~/models/Log';
 import Question from '~/models/Question';
 import Student from '~/models/Student';
 import StudentCourse from '~/models/StudentCourse';
@@ -638,6 +639,13 @@ class calendarService {
                 }
             }
 
+            await Log.create({
+                student_id: idStudent,
+                event: 'Booking lịch cho học sinh',
+                description: '',
+                calendar_id: idCalendar,
+            });
+
             if (status) {
                 switch (status) {
                     case 'is_reservation': {
@@ -762,6 +770,12 @@ class calendarService {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Missing required parameters');
             }
 
+            const calendarTeacher = await CalendarTeacher.findOne({
+                where: {
+                    id: idCalendar,
+                },
+            });
+
             const query: any = {};
             if (!isCancel) {
                 switch (status) {
@@ -769,6 +783,12 @@ class calendarService {
                         query.is_reservation = true;
                         query.is_confirm = false;
                         query.is_interviewed_meet = false;
+                        await Log.create({
+                            student_id: id,
+                            event: 'Trạng thái học sinh được tạo reservation',
+                            description: '',
+                            calendar_id: idCalendar,
+                        });
                         break;
                     }
 
@@ -776,6 +796,12 @@ class calendarService {
                         query.is_reservation = false;
                         query.is_confirm = true;
                         query.is_interviewed_meet = false;
+                        await Log.create({
+                            student_id: id,
+                            event: 'Trạng thái học sinh được tạo confirm',
+                            description: '',
+                            calendar_id: idCalendar,
+                        });
                         break;
                     }
 
@@ -783,6 +809,12 @@ class calendarService {
                         query.is_reservation = false;
                         query.is_confirm = false;
                         query.is_interviewed_meet = true;
+                        await Log.create({
+                            student_id: id,
+                            event: 'Trạng thái học sinh được tạo interviewed meet',
+                            description: '',
+                            calendar_id: idCalendar,
+                        });
                         break;
                     }
                 }
@@ -791,6 +823,12 @@ class calendarService {
                 query.is_confirm = false;
                 query.is_interviewed_meet = false;
                 query.is_cancel = true;
+                await Log.create({
+                    student_id: id,
+                    event: 'Trạng thái học sinh được hủy',
+                    description: '',
+                    calendar_id: idCalendar,
+                });
             }
 
             await CalendarTeacher.update(

@@ -9,6 +9,7 @@ import AllCode from '~/models/AllCode';
 import Calendar from '~/models/Calendar';
 import CalendarTeacher from '~/models/CalendarTeacher';
 import Exam from '~/models/Exam';
+import Log from '~/models/Log';
 import Parent from '~/models/Parent';
 import Student from '~/models/Student';
 import User from '~/models/User';
@@ -66,6 +67,16 @@ class studentService {
     async createStudentService(data: studentDto) {
         try {
             let checkExit = await this.checkStudentExit(data.email);
+            const saleCrete: any = await User.findOne({
+                where: {
+                    email: data.token_author,
+                },
+            });
+
+            let idSale = -1;
+            if (saleCrete) {
+                idSale = saleCrete.id;
+            }
 
             if (checkExit) {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Student already exists');
@@ -76,13 +87,26 @@ class studentService {
             await Student.create({
                 ...data,
                 password: passwordHash,
+                sale_created_id: idSale,
             });
 
-            const student = await Student.findOne({
+            const student: any = await Student.findOne({
                 where: {
                     email: data.email,
                 },
             });
+
+            try {
+                await Log.create({
+                    student_id: student.id,
+                    user_id: idSale,
+                    event: 'Tài Khoản Đã Được Tạo Mới Bởi SALE',
+                    description: '',
+                    calendar_id: null,
+                });
+            } catch (error) {
+                console.log(error);
+            }
 
             return ResponseHandler(httpStatus.OK, student, 'Register Student Successfully');
         } catch (err) {

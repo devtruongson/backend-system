@@ -2,6 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 import Student from './Student';
 import User from './User';
+import CalendarTeacher from './CalendarTeacher';
 
 class Log extends Model {}
 
@@ -19,6 +20,10 @@ Log.init(
         },
 
         user_id: {
+            type: DataTypes.INTEGER,
+        },
+
+        calendar_id: {
             type: DataTypes.INTEGER,
         },
 
@@ -44,6 +49,17 @@ Log.belongsTo(Student, {
 
 Student.hasMany(Log, {
     foreignKey: 'student_id',
+    as: 'LogData',
+});
+
+Log.belongsTo(CalendarTeacher, {
+    foreignKey: 'calendar_id',
+    targetKey: 'id',
+    as: 'CalendarDate',
+});
+
+CalendarTeacher.hasMany(Log, {
+    foreignKey: 'calendar_id',
     as: 'LogData',
 });
 
