@@ -11,6 +11,7 @@ import Student from '~/models/Student';
 import { sequelize } from './connectDB';
 import Question from '~/models/Question';
 import StudentCourse from '~/models/StudentCourse';
+import Log from '~/models/Log';
 
 (async () => {
     try {
@@ -29,6 +30,7 @@ import StudentCourse from '~/models/StudentCourse';
             Question,
             Student,
             StudentCourse,
+            Log,
         ];
         await Promise.all(modals.map((modal) => modal.sync()));
     } catch (error) {

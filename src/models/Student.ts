@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 import AllCode from './AllCode';
+import User from './User';
 
 class Student extends Model {}
 
@@ -52,6 +53,9 @@ Student.init(
         course_code: {
             type: DataTypes.STRING,
         },
+        sale_created_id: {
+            type: DataTypes.INTEGER,
+        },
     },
     {
         sequelize,
@@ -59,15 +63,15 @@ Student.init(
     },
 );
 
-// Student.belongsTo(AllCode, {
-//     foreignKey: 'course_code',
-//     targetKey: 'id',
-//     as: 'AllCodeData',
-// });
+Student.belongsTo(User, {
+    foreignKey: 'sale_created_id',
+    targetKey: 'id',
+    as: 'SaleData',
+});
 
-// AllCode.hasMany(Student, {
-//     foreignKey: 'course_code',
-//     as: 'StudentData',
-// });
+User.hasMany(Student, {
+    foreignKey: 'sale_created_id',
+    as: 'StudentData',
+});
 
 export default Student;

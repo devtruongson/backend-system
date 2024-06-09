@@ -50,6 +50,9 @@ const initCalenderRouter = (app: Express) => {
     );
     router.patch('/change-status', calendarController.handleChangeStatus);
 
+    router.get('/get-schedule', calendarController.handleGetSchedule);
+    router.get('/count-schedule-teacher', calendarController.handleCountScheduleTeacher);
+
     return app.use('/v1/calendar', router);
 };
 

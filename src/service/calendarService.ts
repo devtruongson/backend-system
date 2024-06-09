@@ -792,6 +792,7 @@ class calendarService {
                 query.is_interviewed_meet = false;
                 query.is_cancel = true;
             }
+
             await CalendarTeacher.update(
                 {
                     ...query,
@@ -805,6 +806,165 @@ class calendarService {
             );
 
             return ResponseHandler(httpStatus.OK, null, 'Calendar teacher');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async getScheduleService(
+        idTeacher: number = 0,
+        page: number,
+        pageSize: number,
+        dateStart: string = '',
+        dateEnd: string = '',
+        isStudent: string = '',
+    ) {
+        try {
+            if (!idTeacher) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'misssing value');
+            }
+
+            const query: any = {};
+
+            if (dateStart && !dateEnd) {
+                query.day = dateStart;
+            }
+
+            if (dateStart && dateEnd) {
+                query.day = {
+                    [Op.between]: [dateStart, dateEnd],
+                };
+            }
+
+            if (isStudent.toLocaleLowerCase() === 'true') {
+                query.student_id = {
+                    [Op.not]: null,
+                };
+            }
+
+            if (isStudent.toLocaleLowerCase() === 'false') {
+                query.student_id = {
+                    [Op.is]: null,
+                };
+            }
+
+            if (!page || !pageSize) {
+                const calendars = await CalendarTeacher.findAll({
+                    where: {
+                        teacher_id: idTeacher,
+                        ...query,
+                    },
+                    order: [['time_stamp_start', 'DESC']],
+                    attributes: {
+                        exclude: ['createdAt', 'updatedAt'],
+                    },
+                    include: [
+                        {
+                            model: Student,
+                            as: 'studentData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                        },
+                        {
+                            model: User,
+                            as: 'teacherData',
+                            attributes: {
+                                exclude: ['password', 'createdAt', 'updatedAt'],
+                            },
+                        },
+                    ],
+                });
+
+                return ResponseHandler(httpStatus.OK, calendars, 'Calendar teacher');
+            }
+
+            let offset: number = (page - 1) * pageSize;
+            let { count, rows } = await CalendarTeacher.findAndCountAll({
+                where: {
+                    teacher_id: idTeacher,
+                    ...query,
+                },
+                order: [['time_stamp_start', 'DESC']],
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+                include: [
+                    {
+                        model: Student,
+                        as: 'studentData',
+                        attributes: {
+                            exclude: ['password', 'createdAt', 'updatedAt'],
+                        },
+                    },
+                    {
+                        model: User,
+                        as: 'teacherData',
+                        attributes: {
+                            exclude: ['password', 'createdAt', 'updatedAt'],
+                        },
+                    },
+                ],
+                offset: +offset,
+                limit: +pageSize,
+            });
+
+            let data = {
+                items: rows,
+                meta: {
+                    currentPage: page,
+                    totalIteams: count,
+                    totalPages: Math.ceil(count / pageSize),
+                },
+            };
+
+            return ResponseHandler(httpStatus.OK, data, 'Calendar teacher');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async countScheduleTeacherService(idTeacher: number) {
+        try {
+            let dataBuider = {
+                all: 0,
+                notStudent: 0,
+                haveStudent: 0,
+                interview: 0,
+                meet: 0,
+                fail: 0,
+                cancel: 0,
+            };
+            let calendars = await CalendarTeacher.findAll({
+                where: {
+                    teacher_id: idTeacher,
+                },
+                raw: true,
+            });
+
+            dataBuider.all = calendars.length;
+            dataBuider.cancel = calendars.filter((item: any) => item.is_cancel).length;
+            const havestudent = calendars.filter(
+                (item: any) => item.is_reservation || item.is_confirm || item.is_interviewed_meet,
+            ).length;
+            dataBuider.haveStudent = havestudent;
+
+            dataBuider.notStudent = dataBuider.all - havestudent;
+            // calendars.filter((item: any) => !item.is_reservation).length;
+            dataBuider.interview = calendars.filter((item: any) => item.is_confirm).length;
+            dataBuider.meet = calendars.filter((item: any) => item.is_interviewed_meet).length;
+
+            const timeStamp = new Date().getTime();
+            dataBuider.fail = calendars.filter((item: any) => {
+                const timeStart = new Date(+item.time_stamp_start).getTime();
+                if (timeStamp - timeStart > 0 && item.is_confirm === true) {
+                    return true;
+                }
+            }).length;
+
+            return ResponseHandler(httpStatus.OK, dataBuider, 'Calendar teacher');
         } catch (error) {
             console.log(error);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

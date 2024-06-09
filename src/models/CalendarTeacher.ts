@@ -54,6 +54,14 @@ CalendarTeacher.init(
         is_cancel: {
             type: DataTypes.BOOLEAN,
         },
+
+        link_video: {
+            type: DataTypes.TEXT('long'),
+        },
+
+        note: {
+            type: DataTypes.TEXT('long'),
+        },
     },
     {
         sequelize,

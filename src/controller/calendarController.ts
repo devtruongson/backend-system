@@ -185,6 +185,42 @@ class calendarController {
             return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
         }
     }
+
+    async handleGetSchedule(req: Request, res: Response) {
+        try {
+            const idTeacher: number = parseInt(req.query.idTeacher as string);
+            const page: number = parseInt(req.query.page as string);
+            const pageSize: number = parseInt(req.query.pageSize as string);
+            const dateStart: string = req.query.dateStart as string;
+            const dateEnd: string = req.query.dateEnd as string;
+            const isStudent: string = req.query.isStudent as string;
+
+            let data = await calendarService.getScheduleService(
+                idTeacher,
+                page,
+                pageSize,
+                dateStart,
+                dateEnd,
+                isStudent,
+            );
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
+
+    async handleCountScheduleTeacher(req: Request, res: Response) {
+        try {
+            const idTeacher: number = parseInt(req.query.idTeacher as string);
+
+            let data = await calendarService.countScheduleTeacherService(idTeacher);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
 }
 
 export default new calendarController();
