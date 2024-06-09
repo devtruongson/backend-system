@@ -970,6 +970,27 @@ class calendarService {
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }
+
+    async changeNoteService(data: { id: number; link_video?: string; note?: string }) {
+        try {
+            console.log(data);
+            await CalendarTeacher.update(
+                {
+                    link_video: data.link_video,
+                    note: data.note,
+                },
+                {
+                    where: {
+                        id: data.id,
+                    },
+                },
+            );
+            return ResponseHandler(httpStatus.OK, null, 'Cập nhật thông tin thành công ');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
 }
 
 export default new calendarService();
