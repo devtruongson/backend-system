@@ -9,6 +9,7 @@ import initApiExamQuestion from './apiExamQuestion';
 import initApiExam from './apiExam';
 import initApiStudent from './apiStudent';
 import initApiParent from './apiParent';
+import initApiLog from './apiLog';
 
 const initApiRoutes = (app: Express) => {
     initApiUser(app);
@@ -21,6 +22,7 @@ const initApiRoutes = (app: Express) => {
     initApiExamQuestion(app);
     initApiStudent(app);
     initApiParent(app);
+    initApiLog(app);
 };
 
 export default initApiRoutes;

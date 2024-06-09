@@ -9,6 +9,7 @@ import Question from '~/models/Question';
 import { ResponseHandler } from '~/utils/Response';
 import examQuestionService from './examQuestionService';
 import Student from '~/models/Student';
+import Log from '~/models/Log';
 
 class examService {
     async handleGetOneExam(id: number, isCompleted: boolean = false): Promise<examDto | null> {
@@ -65,6 +66,14 @@ class examService {
                 is_testing: false,
                 is_tested: false,
                 level: null,
+            });
+
+            await Log.create({
+                student_id: data.student_id,
+                user_id: null,
+                event: 'Bài kiểm tra đã được tạo',
+                description: '',
+                calendar_id: null,
             });
 
             const check = await examQuestionService.createExamQuestionAutoService(
@@ -391,8 +400,6 @@ class examService {
                 is_tested: false,
                 is_completed: false,
             };
-
-            console.log(status, id);
 
             switch (status) {
                 case 'is_booked':
