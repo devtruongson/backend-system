@@ -70,6 +70,8 @@ class UserService {
             }
 
             const checkPassword = await comparePassword(body.password, dataCheck.User.password);
+
+            console.log(dataCheck);
             const tokenAccess = handleCreateToken(
                 {
                     id: dataCheck.User.id,
