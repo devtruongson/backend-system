@@ -9,7 +9,6 @@ export class examDto {
     @IsNotEmpty()
     student_id: number;
 
-    @IsNotEmpty()
     teacher_id: number;
 
     @IsNotEmpty()

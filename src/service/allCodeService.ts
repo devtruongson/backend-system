@@ -45,7 +45,6 @@ class allCodeService {
 
     async getAllCodeByCode(code: string) {
         try {
-            console.log(code);
             let data = await AllCode.findAll({
                 where: {
                     code: code,

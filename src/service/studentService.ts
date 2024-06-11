@@ -66,6 +66,7 @@ class studentService {
 
     async createStudentService(data: studentDto) {
         try {
+            console.log(data);
             let checkExit = await this.checkStudentExit(data.email);
             const saleCrete: any = await User.findOne({
                 where: {
@@ -292,6 +293,13 @@ class studentService {
                     attributes: {
                         exclude: ['password'],
                     },
+                    include: [
+                        {
+                            model: Parent,
+                            as: 'ParentData',
+                            include: [{ model: AllCode, as: 'AssociationData' }],
+                        },
+                    ],
                     offset: +offset,
                     limit: +pageSize,
                 });
