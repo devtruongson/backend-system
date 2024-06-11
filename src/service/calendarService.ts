@@ -1011,7 +1011,6 @@ class calendarService {
 
     async changeNoteService(data: { id: number; link_video?: string; note?: string }) {
         try {
-            console.log(data);
             await CalendarTeacher.update(
                 {
                     link_video: data.link_video,
@@ -1024,6 +1023,34 @@ class calendarService {
                 },
             );
             return ResponseHandler(httpStatus.OK, null, 'Cập nhật thông tin thành công ');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async changeMoreInterViewService(data: { listCalender: number[] }) {
+        try {
+            await CalendarTeacher.update(
+                {
+                    is_reservation: false,
+                    is_confirm: false,
+                    is_interviewed_meet: true,
+                },
+                {
+                    where: {
+                        id: data.listCalender,
+                    },
+                },
+            );
+            return ResponseHandler(httpStatus.OK, null, 'Cập nhật thông tin thành công ');
+
+            // await Log.create({
+            //     student_id: id,
+            //     event: 'Trạng thái học sinh được tạo interviewed meet',
+            //     description: '',
+            //     calendar_id: idCalendar,
+            // });
         } catch (error) {
             console.log(error);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

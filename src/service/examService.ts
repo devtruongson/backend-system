@@ -59,6 +59,7 @@ class examService {
         try {
             const examCreate: any = await Exam.create({
                 ...data,
+                teacher_id: null,
                 correct_result_count: 0,
                 total_result: 0,
                 is_completed: false,
@@ -71,7 +72,7 @@ class examService {
             await Log.create({
                 student_id: data.student_id,
                 user_id: null,
-                event: 'Bài kiểm tra đã được tạo',
+                event: `${data.title} đã được tạo`,
                 description: '',
                 calendar_id: null,
             });

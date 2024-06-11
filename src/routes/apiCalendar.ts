@@ -54,6 +54,7 @@ const initCalenderRouter = (app: Express) => {
     router.get('/count-schedule-teacher', calendarController.handleCountScheduleTeacher);
 
     router.put('/change-note', calendarController.handleChangeNote);
+    router.put('/change-more-interview', calendarController.handleChangeInterView);
 
     return app.use('/v1/calendar', router);
 };
