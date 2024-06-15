@@ -641,7 +641,7 @@ class studentService {
         }
     }
 
-    async handleGetCountStudent(type: string) {
+    async handleGetCountStudent(type: string, idStudent: string) {
         if (type === 'all') {
             return await Student.count();
         } else if (type === 'ENG' || type === 'MATH') {
@@ -650,6 +650,16 @@ class studentService {
                     course_code: type,
                 },
             });
+        }
+
+        const query: { student_id: any } = {
+            student_id: {
+                [Op.ne]: null,
+            },
+        };
+
+        if (idStudent) {
+            query.student_id = idStudent;
         }
 
         if (type === 'meet') {
@@ -663,9 +673,7 @@ class studentService {
 
             const dataQuery: any = await CalendarTeacher.findAll({
                 where: {
-                    student_id: {
-                        [Op.ne]: null,
-                    },
+                    ...query,
                 },
                 raw: true,
             });
@@ -696,9 +704,7 @@ class studentService {
 
             const dataQuery: any = await Exam.findAll({
                 where: {
-                    student_id: {
-                        [Op.ne]: null,
-                    },
+                    ...query,
                 },
                 raw: true,
             });

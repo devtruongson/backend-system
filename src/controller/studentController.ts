@@ -119,7 +119,7 @@ class studentController {
 
     async handleGetCountStudent(req: Request, res: Response) {
         try {
-            let data = await studentService.handleGetCountStudent(req.query.type as any);
+            let data = await studentService.handleGetCountStudent(req.query.type as any, req.query.idStudent as any);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);
