@@ -56,7 +56,14 @@ class questionService {
 
     // GET LIMIT
 
-    async getQuestionService(page: number, pageSize: number, authorId: number, level: number = 0) {
+    async getQuestionService(
+        page: number,
+        pageSize: number,
+        authorId: number,
+        level: number = 0,
+        classId: number,
+        course: string,
+    ) {
         try {
             let query: any = {
                 author_id: authorId,
@@ -64,6 +71,14 @@ class questionService {
 
             if (level) {
                 query.level = level;
+            }
+
+            if (classId) {
+                query.class = classId;
+            }
+
+            if (course) {
+                query.course_code = course;
             }
 
             let offset: number = (page - 1) * pageSize;

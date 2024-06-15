@@ -13,17 +13,23 @@ class questionController {
             let page = req.query?.page as number | undefined;
             let pageSize = req.query?.pageSize as number | undefined;
             let authorId = req.query?.authorId as number | undefined;
-            let level = req.query?.level as number | undefined;
+            let level: number = parseInt(req.query?.level as string);
+            let classId: number = parseInt(req.query.classId as string);
+            let course = req.query?.course as string;
 
             let data;
 
             if (!page || !pageSize || !authorId) {
                 data = await questionService.getAllQuestionService();
-            } else if (!level) {
-                data = await questionService.getQuestionService(+page, +pageSize, +authorId);
             } else {
-                data = await questionService.getQuestionService(+page, +pageSize, +authorId, +level);
+                data = await questionService.getQuestionService(+page, +pageSize, +authorId, level, classId, course);
             }
+
+            // if (!level) {
+            //     data = await questionService.getQuestionService(+page, +pageSize, +authorId);
+            // } else {
+            //     data = await questionService.getQuestionService(+page, +pageSize, +authorId, +level);
+            // }
 
             return res.status(httpStatus.OK).json(data);
         } catch (err) {

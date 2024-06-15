@@ -12,7 +12,10 @@ import Student from '~/models/Student';
 import Log from '~/models/Log';
 
 class examService {
-    async handleGetOneExam(id: number, isCompleted: boolean = false): Promise<examDto | null> {
+    async handleGetOneExam(
+        id: number,
+        isCompleted: boolean = false,
+    ): Promise<Omit<examDto, 'course_code' | 'class'> | null> {
         let excludeAnswer = ['createdAt', 'updatedAt'];
         if (!isCompleted) {
             excludeAnswer.push('is_right');
@@ -48,7 +51,7 @@ class examService {
                 },
             ],
             nest: true,
-        })) as examDto | null;
+        })) as Omit<examDto, 'course_code' | 'class'> | null;
 
         return exam;
     }
@@ -81,6 +84,8 @@ class examService {
                 examCreate.id,
                 +data.total_question,
                 +data.level,
+                +data.class,
+                data.course_code,
             );
 
             const exam = (await Exam.findOne({
@@ -88,7 +93,7 @@ class examService {
                     code: data.code,
                 },
                 nest: true,
-            })) as examDto | null;
+            })) as Omit<examDto, 'course_code' | 'class'> | null;
 
             if (!exam) {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Tạo lỗi vui lòng thử lại');
@@ -271,7 +276,7 @@ class examService {
 
     //UPDATE INFO
 
-    async updateInfoExamService(data: examDto) {
+    async updateInfoExamService(data: Omit<examDto, 'course_code' | 'class'>) {
         try {
             await Exam.update(
                 {

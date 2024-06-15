@@ -935,6 +935,12 @@ class calendarService {
                         attributes: {
                             exclude: ['password', 'createdAt', 'updatedAt'],
                         },
+                        include: [
+                            {
+                                model: Exam,
+                                as: 'examData',
+                            },
+                        ],
                     },
                     {
                         model: User,

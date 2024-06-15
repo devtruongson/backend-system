@@ -27,6 +27,12 @@ export class examDto {
     @IsNotEmpty()
     level: number;
 
+    @IsNotEmpty()
+    class: number;
+
+    @IsNotEmpty()
+    course_code: string;
+
     is_completed: boolean;
 
     createdAt: string;
