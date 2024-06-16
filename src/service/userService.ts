@@ -147,13 +147,22 @@ class UserService {
                 limit: +data.pageSize,
             });
 
+            let query: any = {
+                [Op.eq]: data.day ? data.day : new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
+            };
+
+            if (data.isAll) {
+                query = {
+                    [Op.gte]: data.day ? data.day : new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
+                };
+            }
             const dataRes = await Promise.all(
                 await rows.map(async (row: any) => {
                     const countCalendar = await CalendarTeacher.count({
                         where: {
                             teacher_id: row.id,
                             day: {
-                                [Op.gte]: new Date(new Date().setHours(0, 0, 0, 0)).getTime(),
+                                ...query,
                             },
                         },
                     });

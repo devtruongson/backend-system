@@ -1,11 +1,11 @@
 import express, { Express } from 'express';
 import studentController from '~/controller/studentController';
-import { handleCheckTokenUser, handleCheckTokenUserInSystem } from '~/middleware/jwtActions';
+import { handleCheckTokenSale, handleCheckTokenUser, handleCheckTokenUserInSystem } from '~/middleware/jwtActions';
 
 const router = express.Router();
 
 const initApiStudent = (app: Express) => {
-    router.post('/register', handleCheckTokenUserInSystem, studentController.handleCreateStudent);
+    router.post('/register', handleCheckTokenSale, studentController.handleCreateStudent);
 
     router.post('/login', studentController.handleLoginStudent);
     router.post('/create-bulk', studentController.CreateStudentBulk);

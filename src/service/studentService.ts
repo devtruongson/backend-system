@@ -299,6 +299,10 @@ class studentService {
                             as: 'ParentData',
                             include: [{ model: AllCode, as: 'AssociationData' }],
                         },
+                        {
+                            model: User,
+                            as: 'SaleData',
+                        },
                     ],
                     offset: +offset,
                     limit: +pageSize,

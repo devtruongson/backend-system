@@ -606,8 +606,6 @@ class calendarService {
             const checkValidBooking = (await CalendarTeacher.findOne({
                 where: {
                     student_id: idStudent,
-                    [Op.or]: [{ is_reservation: true }, { is_confirm: true }],
-                    is_interviewed_meet: false,
                     is_cancel: false,
                 },
                 raw: true,
@@ -628,7 +626,7 @@ class calendarService {
                             is_reservation: false,
                             is_confirm: false,
                             is_interviewed_meet: false,
-                            is_cancel: true,
+                            is_cancel: false,
                         },
                         {
                             where: {
