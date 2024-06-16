@@ -142,6 +142,21 @@ class studentController {
                 .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
         }
     }
+
+    async handleSearch(req: Request, res: Response) {
+        try {
+            let textSearch: string = req.query.textSearch as string;
+            let page: number = parseInt(req.query.page as string);
+            let pageSize: number = parseInt(req.query.pageSize as string);
+            let data = await studentService.searchStudentService(textSearch, page, pageSize);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res
+                .status(httpStatus.INTERNAL_SERVER_ERROR)
+                .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
+        }
+    }
 }
 
 export default new studentController();

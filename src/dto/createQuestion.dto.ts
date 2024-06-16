@@ -15,6 +15,12 @@ export class questionDto {
     level: number;
 
     @IsNotEmpty()
+    class: number;
+
+    @IsNotEmpty()
+    course_code: string;
+
+    @IsNotEmpty()
     author_id: number;
 
     createdAt: string;

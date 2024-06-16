@@ -132,8 +132,11 @@ class calendarController {
 
     async handleSearchCalendar(req: Request, res: Response) {
         try {
+            let idUser: number = parseInt(req.query.idUser as string);
             let textSearch: string = req.query.textSearch as string;
-            let data = await calendarService.searchCalendarService(textSearch);
+            let page: number = parseInt(req.query.page as string);
+            let pageSize: number = parseInt(req.query.pageSize as string);
+            let data = await calendarService.searchCalendarService(idUser, textSearch, page, pageSize);
             return res.status(httpStatus.OK).json(data);
         } catch (err) {
             console.log(err);

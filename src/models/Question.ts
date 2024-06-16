@@ -25,6 +25,12 @@ Question.init(
         level: {
             type: DataTypes.INTEGER,
         },
+        class: {
+            type: DataTypes.INTEGER,
+        },
+        course_code: {
+            type: DataTypes.STRING,
+        },
         author_id: {
             type: DataTypes.INTEGER,
         },
@@ -39,6 +45,12 @@ Question.belongsTo(AllCode, {
     foreignKey: 'level',
     targetKey: 'id',
     as: 'levelData',
+});
+
+Question.belongsTo(AllCode, {
+    foreignKey: 'claa',
+    targetKey: 'id',
+    as: 'classData',
 });
 
 Question.belongsTo(User, {

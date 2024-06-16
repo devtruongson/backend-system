@@ -10,9 +10,14 @@ import { ResponseHandler } from '~/utils/Response';
 import examQuestionService from './examQuestionService';
 import Student from '~/models/Student';
 import Log from '~/models/Log';
+import { Op } from 'sequelize';
+import { studentDto } from '~/dto/createStudent.dto';
 
 class examService {
-    async handleGetOneExam(id: number, isCompleted: boolean = false): Promise<examDto | null> {
+    async handleGetOneExam(
+        id: number,
+        isCompleted: boolean = false,
+    ): Promise<Omit<examDto, 'course_code' | 'class'> | null> {
         let excludeAnswer = ['createdAt', 'updatedAt'];
         if (!isCompleted) {
             excludeAnswer.push('is_right');
@@ -48,7 +53,7 @@ class examService {
                 },
             ],
             nest: true,
-        })) as examDto | null;
+        })) as Omit<examDto, 'course_code' | 'class'> | null;
 
         return exam;
     }
@@ -81,6 +86,8 @@ class examService {
                 examCreate.id,
                 +data.total_question,
                 +data.level,
+                +data.class,
+                data.course_code,
             );
 
             const exam = (await Exam.findOne({
@@ -88,7 +95,7 @@ class examService {
                     code: data.code,
                 },
                 nest: true,
-            })) as examDto | null;
+            })) as Omit<examDto, 'course_code' | 'class'> | null;
 
             if (!exam) {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Tạo lỗi vui lòng thử lại');
@@ -271,7 +278,7 @@ class examService {
 
     //UPDATE INFO
 
-    async updateInfoExamService(data: examDto) {
+    async updateInfoExamService(data: Omit<examDto, 'course_code' | 'class'>) {
         try {
             await Exam.update(
                 {
@@ -467,6 +474,85 @@ class examService {
                 },
             );
             return ResponseHandler(httpStatus.OK, null, 'exam updated successfully');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async searchExam(textSearch: string, page: number, pageSize: number) {
+        try {
+            let listStudent = (await Student.findAll({
+                where: {
+                    [Op.or]: [
+                        { fullName: { [Op.like]: `%${textSearch}%` } },
+                        { phoneNumber: { [Op.like]: `%${textSearch}%` } },
+                        { email: { [Op.like]: `%${textSearch}%` } },
+                    ],
+                },
+                raw: true,
+            })) as studentDto[] | [];
+
+            const listId: number[] = listStudent.map((item) => {
+                return item.id;
+            });
+
+            let offset: number = (page - 1) * pageSize;
+
+            let { count, rows } = await Exam.findAndCountAll({
+                where: {
+                    student_id: {
+                        [Op.in]: listId,
+                    },
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+                include: [
+                    {
+                        model: Student,
+                        as: 'studentData',
+                        attributes: {
+                            exclude: ['password'],
+                        },
+                    },
+                    {
+                        model: ExamQuestion,
+                        as: 'ExamQuestionData',
+                        attributes: {
+                            exclude: ['createdAt', 'updatedAt'],
+                        },
+                        include: [
+                            {
+                                model: Question,
+                                as: 'QuestionData',
+                                attributes: {
+                                    exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                },
+                                include: [
+                                    {
+                                        model: Answer,
+                                        as: 'answers',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+                offset: offset,
+                limit: pageSize,
+            });
+
+            let resData = {
+                items: rows,
+                meta: {
+                    currentPage: page,
+                    totalIteams: count,
+                    totalPages: Math.ceil(count / pageSize),
+                },
+            };
+
+            return ResponseHandler(httpStatus.OK, resData, 'exams');
         } catch (error) {
             console.log(error);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));

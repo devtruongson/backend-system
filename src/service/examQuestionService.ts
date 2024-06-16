@@ -1,5 +1,4 @@
 import httpStatus from 'http-status';
-import sequelize from 'sequelize';
 import Sequelize from 'sequelize';
 import { examQuestionDto } from '~/dto/createExamQuestion';
 import ExamQuestion from '~/models/ExamQuestion';
@@ -20,11 +19,13 @@ class examQuestionService {
         return false;
     }
 
-    async handleGetRandomQuestion(level: number, count: number = 5): Promise<any> {
+    async handleGetRandomQuestion(level: number, count: number = 5, classId: number, course: string): Promise<any> {
         const model: any = Question;
         let questions = await model.findAll({
             where: {
                 level: level,
+                class: classId,
+                course_code: course,
             },
             order: [[Sequelize.literal('RAND()')]],
             limit: count,
@@ -56,9 +57,17 @@ class examQuestionService {
 
     // CREATE AUTO
 
-    async createExamQuestionAutoService(examId: number, totalQuestion: number, level: number) {
+    async createExamQuestionAutoService(
+        examId: number,
+        totalQuestion: number,
+        level: number,
+        classId: number,
+        course: string,
+    ) {
         try {
-            let listQuestion = (await this.handleGetRandomQuestion(level, totalQuestion)) as { id: number }[];
+            let listQuestion = (await this.handleGetRandomQuestion(level, totalQuestion, classId, course)) as {
+                id: number;
+            }[];
 
             await ExamQuestion.bulkCreate(
                 listQuestion.map((item) => {

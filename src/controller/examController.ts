@@ -148,6 +148,19 @@ class examController {
             console.log(error);
         }
     }
+
+    async handleSearch(req: Request, res: Response) {
+        try {
+            let textSearch: string = req.query.textSearch as string;
+            let page: number = parseInt(req.query.page as string);
+            let pageSize: number = parseInt(req.query.pageSize as string);
+            let data = await examService.searchExam(textSearch, page, pageSize);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Error From Server'));
+        }
+    }
 }
 
 export default new examController();
