@@ -492,7 +492,7 @@ class calendarService {
         }
     }
 
-    async searchCalendarService(textSearch: string) {
+    async searchCalendarService(idUser: number, textSearch: string, page: number, pageSize: number) {
         try {
             let listStudent = (await Student.findAll({
                 where: {
@@ -509,8 +509,10 @@ class calendarService {
                 return item.id;
             });
 
-            const listCalendar = await CalendarTeacher.findAll({
+            let offset: number = (page - 1) * pageSize;
+            let { count, rows } = await CalendarTeacher.findAndCountAll({
                 where: {
+                    teacher_id: idUser,
                     student_id: {
                         [Op.in]: listId,
                     },
@@ -570,9 +572,83 @@ class calendarService {
                         },
                     },
                 ],
+                offset: +offset,
+                limit: +pageSize,
             });
 
-            return ResponseHandler(httpStatus.OK, listCalendar, 'Calendar teacher');
+            let data = {
+                items: rows,
+                meta: {
+                    currentPage: page,
+                    totalIteams: count,
+                    totalPages: Math.ceil(count / pageSize),
+                },
+            };
+
+            // const listCalendar = await CalendarTeacher.findAll({
+            //     where: {
+            //         student_id: {
+            //             [Op.in]: listId,
+            //         },
+            //     },
+            //     attributes: {
+            //         exclude: ['createdAt', 'updatedAt'],
+            //     },
+            // include: [
+            //     {
+            //         model: Student,
+            //         as: 'studentData',
+            //         attributes: {
+            //             exclude: ['password', 'createdAt', 'updatedAt'],
+            //         },
+            //         include: [
+            //             {
+            //                 model: Exam,
+            //                 as: 'examData',
+            //                 attributes: {
+            //                     exclude: ['createdAt', 'updatedAt'],
+            //                 },
+            //                 include: [
+            //                     {
+            //                         model: ExamQuestion,
+            //                         as: 'ExamQuestionData',
+            //                         attributes: {
+            //                             exclude: ['createdAt', 'updatedAt'],
+            //                         },
+            //                         include: [
+            //                             {
+            //                                 model: Question,
+            //                                 as: 'QuestionData',
+            //                                 attributes: {
+            //                                     exclude: ['createdAt', 'updatedAt'],
+            //                                 },
+            //                                 include: [
+            //                                     {
+            //                                         model: Answer,
+            //                                         as: 'answers',
+            //                                         attributes: {
+            //                                             exclude: ['createdAt', 'updatedAt'],
+            //                                         },
+            //                                     },
+            //                                 ],
+            //                             },
+            //                         ],
+            //                     },
+            //                 ],
+            //             },
+            //         ],
+            //     },
+            //     {
+            //         model: User,
+            //         as: 'teacherData',
+            //         attributes: {
+            //             exclude: ['password', 'createdAt', 'updatedAt'],
+            //         },
+            //     },
+            // ],
+            // });
+
+            return ResponseHandler(httpStatus.OK, data, 'Calendar teacher');
         } catch (error) {
             console.log(error);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
