@@ -6,11 +6,14 @@ import { comparePassword, endCodePassword } from '~/helpers/bcrypt';
 import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import { handleCreateToken } from '~/middleware/jwtActions';
 import AllCode from '~/models/AllCode';
+import Answer from '~/models/Answer';
 import Calendar from '~/models/Calendar';
 import CalendarTeacher from '~/models/CalendarTeacher';
 import Exam from '~/models/Exam';
+import ExamQuestion from '~/models/ExamQuestion';
 import Log from '~/models/Log';
 import Parent from '~/models/Parent';
+import Question from '~/models/Question';
 import Student from '~/models/Student';
 import User from '~/models/User';
 
@@ -809,6 +812,70 @@ class studentService {
     //         if (!teacherId || !page || !pageSize) {
     //             return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'Cần nhập đủ thông tin'));
     //         }
+
+    async searchStudentService(textSearch: string, page: number, pageSize: number) {
+        try {
+            let offset: number = (page - 1) * pageSize;
+
+            let { count, rows } = await Exam.findAndCountAll({
+                where: {
+                    [Op.or]: [
+                        { fullName: { [Op.like]: `%${textSearch}%` } },
+                        { phoneNumber: { [Op.like]: `%${textSearch}%` } },
+                        { email: { [Op.like]: `%${textSearch}%` } },
+                    ],
+                },
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+                include: [
+                    {
+                        model: Exam,
+                        as: 'examData',
+                        include: [
+                            {
+                                model: ExamQuestion,
+                                as: 'ExamQuestionData',
+                                attributes: {
+                                    exclude: ['createdAt', 'updatedAt'],
+                                },
+                                include: [
+                                    {
+                                        model: Question,
+                                        as: 'QuestionData',
+                                        attributes: {
+                                            exclude: ['createdAt', 'updatedAt', 'level', 'author_id'],
+                                        },
+                                        include: [
+                                            {
+                                                model: Answer,
+                                                as: 'answers',
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+                offset: offset,
+                limit: pageSize,
+            });
+
+            let resData = {
+                items: rows,
+                meta: {
+                    currentPage: page,
+                    totalIteams: count,
+                    totalPages: Math.ceil(count / pageSize),
+                },
+            };
+            return ResponseHandler(httpStatus.OK, resData, 'Info Student ');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
 }
 
 export default new studentService();

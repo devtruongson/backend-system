@@ -494,10 +494,6 @@ class calendarService {
 
     async searchCalendarService(textSearch: string) {
         try {
-            if (!textSearch) {
-                return ResponseHandler(httpStatus.OK, null, 'no data');
-            }
-
             let listStudent = (await Student.findAll({
                 where: {
                     [Op.or]: [
