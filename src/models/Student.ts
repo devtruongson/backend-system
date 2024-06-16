@@ -2,6 +2,7 @@ import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../configs/connectDB';
 import AllCode from './AllCode';
 import User from './User';
+import CalendarTeacher from './CalendarTeacher';
 
 class Student extends Model {}
 

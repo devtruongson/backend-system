@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 import { studentDto } from '~/dto/createStudent.dto';
 import { loginDto } from '~/dto/login.dto';
 import { comparePassword, endCodePassword } from '~/helpers/bcrypt';
@@ -254,6 +254,7 @@ class studentService {
         filter: string = 'all',
         level: number = 0,
         textSearch: string = '',
+        idSale: string = '',
     ) {
         try {
             let resData;
@@ -273,6 +274,10 @@ class studentService {
                     { phoneNumber: { [Op.like]: `%${textSearch}%` } },
                     { email: { [Op.like]: `%${textSearch}%` } },
                 ];
+            }
+
+            if (idSale) {
+                query.sale_created_id = +idSale;
             }
 
             if (course_code === 'ENG') {
@@ -305,14 +310,40 @@ class studentService {
                         {
                             model: User,
                             as: 'SaleData',
+                            attributes: {
+                                exclude: ['password'],
+                            },
                         },
                     ],
                     offset: +offset,
                     limit: +pageSize,
+                    nest: true,
+                    raw: true,
                 });
+                const dataRes = await Promise.all(
+                    await rows.map(async (row: any) => {
+                        const dataCalendar = await CalendarTeacher.findOne({
+                            order: [['time_stamp_start', 'DESC']],
+                            where: {
+                                student_id: row.id,
+                            },
+                            limit: 1,
+                        });
+                        const dataExam = await Exam.findAll({
+                            order: [['createdAt', 'DESC']],
+                            where: {
+                                student_id: row.id,
+                            },
+                        });
+
+                        row.calendar = dataCalendar ? dataCalendar : null;
+                        row.exam = dataExam ? dataExam : [];
+                        return row;
+                    }),
+                );
 
                 resData = {
-                    items: rows,
+                    items: dataRes,
                     meta: {
                         currentPage: page,
                         totalIteams: count,

@@ -95,6 +95,7 @@ class studentController {
                 req.query.filter as any,
                 parseInt(req.query.level as string),
                 req.query.textSearch as string,
+                req.query.idSale as string,
             );
             return res.status(httpStatus.OK).json(data);
         } catch (err) {

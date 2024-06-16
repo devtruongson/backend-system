@@ -21,10 +21,17 @@ class examQuestionService {
 
     async handleGetRandomQuestion(level: number, count: number = 5, classId: number, course: string): Promise<any> {
         const model: any = Question;
+
+        const query: any = {};
+
+        if (+classId !== -1) {
+            query.class = classId;
+        }
+
         let questions = await model.findAll({
             where: {
                 level: level,
-                class: classId,
+                ...query,
                 course_code: course,
             },
             order: [[Sequelize.literal('RAND()')]],
