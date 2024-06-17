@@ -1050,6 +1050,7 @@ class calendarService {
                 meet: 0,
                 fail: 0,
                 cancel: 0,
+                completed: 0,
             };
             let calendars = await CalendarTeacher.findAll({
                 where: {
@@ -1064,6 +1065,21 @@ class calendarService {
                 (item: any) => item.is_reservation || item.is_confirm || item.is_interviewed_meet,
             ).length;
             dataBuider.haveStudent = havestudent;
+            const dataCompleteCalendar = await CalendarTeacher.findAll({
+                where: {
+                    link_video: {
+                        [Op.ne]: null,
+                    },
+                    note: {
+                        [Op.ne]: null,
+                    },
+                    teacher_id: idTeacher,
+                },
+                include: [{ model: Student, as: 'studentData' }],
+                nest: true,
+            });
+
+            dataBuider.completed = dataCompleteCalendar.filter((c: any) => c?.studentData?.level).length;
 
             dataBuider.notStudent = dataBuider.all - havestudent;
             // calendars.filter((item: any) => !item.is_reservation).length;
