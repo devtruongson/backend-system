@@ -158,6 +158,15 @@ class studentController {
                 .json(ResponseHandler(httpStatus.INTERNAL_SERVER_ERROR, null, 'error from server'));
         }
     }
+
+    async handleInterView(req: Request, res: Response) {
+        try {
+            let data = await studentService.handleInterView(req.query.idStudent as string, res);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            return res.status(httpStatus.OK).json(err);
+        }
+    }
 }
 
 export default new studentController();
