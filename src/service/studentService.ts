@@ -707,6 +707,7 @@ class studentService {
                 interviewed_meet: 0,
                 fail: 0,
                 cancel: 0,
+                completed: 0,
             };
 
             const dataQuery: any = await CalendarTeacher.findAll({
@@ -715,6 +716,20 @@ class studentService {
                 },
                 raw: true,
             });
+            const dataCompleteCalendar = await CalendarTeacher.findAll({
+                where: {
+                    link_video: {
+                        [Op.ne]: null,
+                    },
+                    note: {
+                        [Op.ne]: null,
+                    },
+                },
+                include: [{ model: Student, as: 'studentData' }],
+                nest: true,
+            });
+
+            dataBuild.completed = dataCompleteCalendar.filter((c: any) => c?.studentData?.level).length;
 
             const timeStamp = new Date().getTime();
             dataBuild.fail = dataQuery.filter((item: any) => {
