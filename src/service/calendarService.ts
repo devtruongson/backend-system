@@ -1101,12 +1101,20 @@ class calendarService {
         }
     }
 
-    async changeNoteService(data: { id: number; link_video?: string; note?: string }) {
+    async changeNoteService(data: { id: number; link_video?: string; note?: string; type: string }) {
         try {
+            let query: any = {};
+            if (data.type === 'note') {
+                query.note = data.note ? data.note : null;
+            }
+
+            if (data.type === 'link') {
+                query.link_video = data.link_video ? data.link_video : null;
+            }
+
             await CalendarTeacher.update(
                 {
-                    link_video: data.link_video,
-                    note: data.note,
+                    ...query,
                 },
                 {
                     where: {
