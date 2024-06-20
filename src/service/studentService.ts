@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import httpStatus from 'http-status';
 import { Op, where } from 'sequelize';
 import { studentDto } from '~/dto/createStudent.dto';
@@ -16,6 +17,8 @@ import Parent from '~/models/Parent';
 import Question from '~/models/Question';
 import Student from '~/models/Student';
 import User from '~/models/User';
+import dotenv from 'dotenv';
+dotenv.config();
 
 import { ResponseHandler } from '~/utils/Response';
 
@@ -750,6 +753,7 @@ class studentService {
             });
             const dataCompleteCalendar = await CalendarTeacher.findAll({
                 where: {
+                    ...query,
                     link_video: {
                         [Op.ne]: null,
                     },
@@ -825,15 +829,34 @@ class studentService {
             if (!id || !level) {
                 return Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
             }
-            await Student.update(
-                {
-                    level: level,
+
+            const exam: any = await Exam.findOne({
+                where: {
+                    student_id: +id,
+                    is_tested: true,
                 },
-                {
-                    where: { id: id },
-                },
-            );
-            return ResponseHandler(httpStatus.OK, null, 'Cập nhật level thành công ');
+                order: [['updatedAt', 'DESC']],
+                raw: true,
+                nest: true,
+            });
+
+            if (exam) {
+                await Student.update(
+                    {
+                        level: level,
+                    },
+                    {
+                        where: { id: id },
+                    },
+                );
+                return ResponseHandler(httpStatus.OK, null, 'Cập nhật level thành công ');
+            } else {
+                return ResponseHandler(
+                    httpStatus.BAD_REQUEST,
+                    null,
+                    'Hãy đảm bảo rằng học sinh đã làm kiểm tra và bạn đã xem qua nó!',
+                );
+            }
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
@@ -956,6 +979,60 @@ class studentService {
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async handleInterView(id: string, Res: Response) {
+        try {
+            const checkCalendarValid: any = await CalendarTeacher.findOne({
+                where: {
+                    student_id: +id,
+                    link_video: {
+                        [Op.ne]: null,
+                    },
+                    note: {
+                        [Op.ne]: null,
+                    },
+                },
+                raw: true,
+                nest: true,
+            });
+            const checkUserValid: any = await Student.findOne({
+                where: {
+                    id: +id,
+                    level: {
+                        [Op.ne]: null,
+                    },
+                },
+                raw: true,
+                nest: true,
+            });
+            const exam: any = await Exam.findOne({
+                where: {
+                    student_id: +id,
+                    is_tested: true,
+                },
+                order: [['updatedAt', 'DESC']],
+                raw: true,
+                nest: true,
+            });
+
+            let path = '';
+            if (checkCalendarValid && checkUserValid && exam) {
+                const level: any = await AllCode.findOne({
+                    where: {
+                        id: checkUserValid.level,
+                    },
+                    raw: true,
+                    nest: true,
+                });
+                path = `${process.env.FRONT_END_URL}/interview?studentId=${id}&level=${level.code ? level.code : 'EMPTY'}&level_detail=${level.title}&timeStart=${exam.updatedAt ? new Date(exam.updatedAt).toLocaleDateString() : new Date().toLocaleDateString()}`;
+            } else {
+                path = `${process.env.FRONT_END_URL}/interview?studentId=${id}&isLevel=EMPTY`;
+            }
+            return path;
+        } catch (error) {
+            return `${process.env.FRONT_END_URL}/interview?studentId=${id}&isLevel=EMPTY`;
         }
     }
 }

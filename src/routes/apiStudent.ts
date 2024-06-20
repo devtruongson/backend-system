@@ -13,6 +13,7 @@ const initApiStudent = (app: Express) => {
     router.get('/', studentController.handleGetAllStudent);
     router.get('/one/:id', studentController.handleGetOneStudent);
     router.get('/count', studentController.handleGetCountStudent);
+    router.get('/interview', studentController.handleInterView);
 
     router.patch('/update-level', studentController.handleUpdateLevel);
     router.get('/:email', handleCheckTokenUser, studentController.handleGetInfoStudent);
