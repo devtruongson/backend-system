@@ -69,7 +69,6 @@ class studentService {
 
     async createStudentService(data: studentDto) {
         try {
-            console.log(data);
             let checkExit = await this.checkStudentExit(data.email);
             const saleCrete: any = await User.findOne({
                 where: {
@@ -236,11 +235,11 @@ class studentService {
                     password: student.Student.password,
                 },
                 {
-                    where: { email: data.email },
+                    where: { id: data.id },
                 },
             );
 
-            return ResponseHandler(httpStatus.OK, null, 'Update Student Successfully');
+            return ResponseHandler(httpStatus.OK, null, 'Thay đổi thông tin học sinh thành công');
         } catch (err) {
             console.log(err);
             Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
@@ -298,9 +297,9 @@ class studentService {
                     where: {
                         ...query,
                     },
-                    attributes: {
-                        exclude: ['password'],
-                    },
+                    // attributes: {
+                    //     exclude: ['password'],
+                    // },
                     include: [
                         {
                             model: Parent,
@@ -317,9 +316,10 @@ class studentService {
                     ],
                     offset: +offset,
                     limit: +pageSize,
-                    nest: true,
-                    raw: true,
+                    // nest: true,
+                    // raw: true,
                 });
+
                 const dataRes = await Promise.all(
                     await rows.map(async (row: any) => {
                         const dataCalendar = await CalendarTeacher.findOne({
@@ -367,7 +367,11 @@ class studentService {
                             model: Student,
                             as: 'studentData',
                             attributes: {
-                                exclude: ['password', 'createdAt', 'updatedAt'],
+                                exclude: [
+                                    // 'password',
+                                    'createdAt',
+                                    'updatedAt',
+                                ],
                             },
                             include: [
                                 {
@@ -407,7 +411,11 @@ class studentService {
                             model: Student,
                             as: 'studentData',
                             attributes: {
-                                exclude: ['password', 'createdAt', 'updatedAt'],
+                                exclude: [
+                                    // 'password',
+                                    'createdAt',
+                                    'updatedAt',
+                                ],
                             },
                             include: [
                                 {
@@ -447,7 +455,11 @@ class studentService {
                             model: Student,
                             as: 'studentData',
                             attributes: {
-                                exclude: ['password', 'createdAt', 'updatedAt'],
+                                exclude: [
+                                    // 'password',
+                                    'createdAt',
+                                    'updatedAt',
+                                ],
                             },
                             include: [
                                 {
@@ -487,7 +499,11 @@ class studentService {
                             model: Student,
                             as: 'studentData',
                             attributes: {
-                                exclude: ['password', 'createdAt', 'updatedAt'],
+                                exclude: [
+                                    // 'password',
+                                    'createdAt',
+                                    'updatedAt',
+                                ],
                             },
                             include: [
                                 {
@@ -527,7 +543,11 @@ class studentService {
                             model: Student,
                             as: 'studentData',
                             attributes: {
-                                exclude: ['password', 'createdAt', 'updatedAt'],
+                                exclude: [
+                                    // 'password',
+                                    'createdAt',
+                                    'updatedAt',
+                                ],
                             },
                             include: [
                                 {
@@ -567,7 +587,11 @@ class studentService {
                             model: Student,
                             as: 'studentData',
                             attributes: {
-                                exclude: ['password', 'createdAt', 'updatedAt'],
+                                exclude: [
+                                    // 'password',
+                                    'createdAt',
+                                    'updatedAt',
+                                ],
                             },
                             include: [
                                 {
@@ -607,7 +631,11 @@ class studentService {
                             model: Student,
                             as: 'studentData',
                             attributes: {
-                                exclude: ['password', 'createdAt', 'updatedAt'],
+                                exclude: [
+                                    // 'password',
+                                    'createdAt',
+                                    'updatedAt',
+                                ],
                             },
                             include: [
                                 {
@@ -649,7 +677,11 @@ class studentService {
                             model: Student,
                             as: 'studentData',
                             attributes: {
-                                exclude: ['password', 'createdAt', 'updatedAt'],
+                                exclude: [
+                                    // 'password',
+                                    'createdAt',
+                                    'updatedAt',
+                                ],
                             },
                             include: [
                                 {
