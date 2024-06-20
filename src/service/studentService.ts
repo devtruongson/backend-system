@@ -242,6 +242,18 @@ class studentService {
                 },
             );
 
+            try {
+                await Log.create({
+                    student_id: student.Student.id,
+                    user_id: null,
+                    event: 'Tài khoản đã được cập nhật bởi SALE',
+                    description: '',
+                    calendar_id: null,
+                });
+            } catch (error) {
+                console.log(error);
+            }
+
             return ResponseHandler(httpStatus.OK, null, 'Thay đổi thông tin học sinh thành công');
         } catch (err) {
             console.log(err);
