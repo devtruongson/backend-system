@@ -19,6 +19,8 @@ const initApiStudent = (app: Express) => {
     router.get('/:email', handleCheckTokenUser, studentController.handleGetInfoStudent);
     router.get('/search', studentController.handleSearch);
 
+    router.delete('/:id', studentController.handleDelete);
+
     return app.use('/v1/student', router);
 };
 

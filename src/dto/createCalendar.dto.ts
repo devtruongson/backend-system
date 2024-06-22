@@ -1,6 +1,8 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class createCalendarDto {
+    id: number;
+
     @IsNotEmpty()
     @IsString()
     time_start: string;

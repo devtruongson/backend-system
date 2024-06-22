@@ -167,6 +167,16 @@ class studentController {
             return res.status(httpStatus.OK).json(err);
         }
     }
+
+    async handleDelete(req: Request, res: Response) {
+        try {
+            const id: number = +req.params.id;
+            let data = await studentService.deleteStudentService(id);
+            return res.status(httpStatus.OK).json(data);
+        } catch (err) {
+            return res.status(httpStatus.OK).json(err);
+        }
+    }
 }
 
 export default new studentController();

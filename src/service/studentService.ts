@@ -21,6 +21,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { ResponseHandler } from '~/utils/Response';
+import { examDto } from '~/dto/createExam.dto';
+import { createCalendarDto } from '~/dto/createCalendar.dto';
 
 class studentService {
     async checkStudentExit(
@@ -1033,6 +1035,65 @@ class studentService {
             return path;
         } catch (error) {
             return `${process.env.FRONT_END_URL}/interview?studentId=${id}&isLevel=EMPTY`;
+        }
+    }
+
+    async deleteStudentService(id: number) {
+        try {
+            if (!id) {
+                return ResponseHandler(httpStatus.BAD_REQUEST, null, 'Please enter id student');
+            }
+
+            let listExam = (await Exam.findAll({
+                where: { student_id: id },
+                raw: true,
+                nest: true,
+            })) as Partial<examDto>[];
+
+            const examIds = listExam.map((item) => item.id);
+
+            let listCalendar = (await CalendarTeacher.findAll({
+                where: { student_id: id },
+            })) as Partial<createCalendarDto>[];
+
+            const listCalendarIds = listCalendar.map((item) => item.id);
+
+            await Promise.all([
+                ExamQuestion.destroy({
+                    where: {
+                        exam_id: examIds,
+                    },
+                }),
+                Log.destroy({
+                    where: {
+                        calendar_id: listCalendarIds,
+                    },
+                }),
+            ]);
+
+            const [deletedCalendarTeachers, deletedExams, deletedParents] = await Promise.all([
+                CalendarTeacher.destroy({
+                    where: { student_id: id },
+                }),
+                Exam.destroy({
+                    where: { student_id: id },
+                }),
+                Parent.destroy({
+                    where: { child: id },
+                }),
+                Log.destroy({
+                    where: { student_id: id },
+                }),
+            ]);
+
+            await Student.destroy({
+                where: { id: id },
+            });
+
+            return ResponseHandler(httpStatus.OK, null, 'Xóa học sinh thành công ');
+        } catch (error) {
+            console.log(error);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
         }
     }
 }

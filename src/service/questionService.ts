@@ -4,6 +4,7 @@ import { questionDto } from '~/dto/createQuestion.dto';
 import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import AllCode from '~/models/AllCode';
 import Answer from '~/models/Answer';
+import ExamQuestion from '~/models/ExamQuestion';
 import Question from '~/models/Question';
 import User from '~/models/User';
 import { ResponseHandler } from '~/utils/Response';
@@ -130,9 +131,18 @@ class questionService {
                 return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't find question");
             }
 
-            if (question.file && !handleRemoveFile(question.file, 'questionFile')) {
-                return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't remove thumbnail");
-            }
+            // if (question.file && !handleRemoveFile(question.file, 'questionFile')) {
+            //     return ResponseHandler(httpStatus.BAD_REQUEST, null, "can't remove thumbnail");
+            // }
+
+            await Promise.all([
+                await ExamQuestion.destroy({
+                    where: { question_id: id },
+                }),
+                await Answer.destroy({
+                    where: { question_id: id },
+                }),
+            ]);
 
             await Question.destroy({
                 where: { id: id },
