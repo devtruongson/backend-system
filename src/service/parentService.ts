@@ -1,6 +1,7 @@
 import httpStatus from 'http-status';
 import { parentDto } from '~/dto/createParent.dto';
 import AllCode from '~/models/AllCode';
+import Log from '~/models/Log';
 import Parent from '~/models/Parent';
 import { ResponseHandler } from '~/utils/Response';
 
@@ -12,6 +13,18 @@ class parentService {
             await Parent.create({
                 ...data,
             });
+
+            try {
+                await Log.create({
+                    student_id: data.child,
+                    user_id: null,
+                    event: 'Thông tin phụ huynh đã được tạo bởi SALE',
+                    description: '',
+                    calendar_id: null,
+                });
+            } catch (error) {
+                console.log(error);
+            }
             return ResponseHandler(httpStatus.OK, null, 'Thêm thông tin phụ huynh thành công');
         } catch (err) {
             console.log(err);
@@ -26,6 +39,7 @@ class parentService {
             await Parent.destroy({
                 where: { id: id },
             });
+
             return ResponseHandler(httpStatus.OK, null, 'Xóa thông tin phụ huynh thành công ');
         } catch (err) {
             console.log(err);
