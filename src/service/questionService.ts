@@ -1,5 +1,7 @@
+import { raw } from 'body-parser';
 import httpStatus from 'http-status';
 import { NIL } from 'uuid';
+import { answerDto } from '~/dto/createAnswer.dto';
 import { questionDto } from '~/dto/createQuestion.dto';
 import { handleRemoveFile } from '~/helpers/handleRemoveImg';
 import AllCode from '~/models/AllCode';
@@ -8,6 +10,11 @@ import ExamQuestion from '~/models/ExamQuestion';
 import Question from '~/models/Question';
 import User from '~/models/User';
 import { ResponseHandler } from '~/utils/Response';
+
+interface ICreateBulk {
+    questions: questionDto[];
+    answers: Partial<answerDto>[][];
+}
 
 class questionService {
     async getOneQuestion(id: number): Promise<questionDto | null> {
@@ -171,6 +178,34 @@ class questionService {
                     where: { id: data.id },
                 },
             );
+            return ResponseHandler(httpStatus.OK, null, 'Update Question successfully');
+        } catch (err) {
+            console.log(err);
+            Promise.reject(ResponseHandler(httpStatus.BAD_GATEWAY, null, 'có lỗi xảy ra!'));
+        }
+    }
+
+    async cretaeBul(data: ICreateBulk) {
+        try {
+            const createQuestions = (await Question.bulkCreate(
+                data.questions.map((item) => {
+                    return {
+                        ...item,
+                    };
+                }),
+            )) as Partial<questionDto>[];
+
+            data.answers.forEach(async (item, index) => {
+                await Answer.bulkCreate(
+                    item.map((itemChild) => {
+                        console.log(index);
+                        return {
+                            ...itemChild,
+                            question_id: createQuestions[index].id,
+                        };
+                    }),
+                );
+            });
             return ResponseHandler(httpStatus.OK, null, 'Update Question successfully');
         } catch (err) {
             console.log(err);

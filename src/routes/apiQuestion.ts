@@ -29,6 +29,8 @@ const initApiQuestion = (app: Express) => {
         questionController.handleUpdateQuestion,
     );
 
+    router.post('/bulk-create', questionController.handleBilkCreateQuestion);
+
     return app.use('/v1/question', router);
 };
 
